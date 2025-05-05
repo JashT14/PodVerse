@@ -1,0 +1,2011 @@
+import React, { useState, useEffect, useRef } from "react";
+import PropTypes from "prop-types";
+import axios from "axios";
+import {
+  Play,
+  Pause,
+  Volume2,
+  VolumeX,
+  Menu,
+  ArrowLeft,
+  PlusCircle,
+  SkipBack,
+  SkipForward,
+  Sun,
+  Moon,
+  Download,
+  ArrowDownCircle,
+  MoreHorizontal,
+  Share2,
+  Trash2
+} from "lucide-react";
+import "./TextToSpeech.css";
+import ShareModal from "./ShareModal";
+
+//Define backend URL
+const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:5257";
+
+// ------------------------------------------------------
+// Utility: Format seconds as mm:ss
+// ------------------------------------------------------
+const formatTime = (seconds) => {
+  if (!seconds || isNaN(seconds)) return "00:00";
+  const mins = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+  return `${mins < 10 ? "0" + mins : mins}:${secs < 10 ? "0" + secs : secs}`;
+};
+
+// Helper to extract fileId from audio URL.
+const extractFileIdFromSrc = (src) => {
+  const parts = src.split("/");
+  const lastPart = parts[parts.length - 1];
+  return lastPart.split("?")[0];
+};
+
+// ------------------------------------------------------
+// AudioPlayer Component
+// ------------------------------------------------------
+const AudioPlayer = ({ src }) => {
+  const token = localStorage.getItem("token");
+  let effectiveSrc = src;
+  if (src && token && !src.startsWith("blob:") && !src.includes("token=")) {
+    effectiveSrc = src.includes("?")
+      ? `${src}&token=${token}`
+      : `${src}?token=${token}`;
+  }
+  if (!effectiveSrc) return <div>Loading audio...</div>;
+
+  const audioRef = useRef(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [fallback, setFallback] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
+
+  const togglePlay = () => {
+    if (!audioRef.current) return;
+    if (audioRef.current.paused) {
+      audioRef.current.play();
+      setIsPlaying(true);
+    } else {
+      audioRef.current.pause();
+      setIsPlaying(false);
+    }
+  };
+
+  const skipBackward = (e) => {
+    e.preventDefault();
+    if (audioRef.current) {
+      const newTime = Math.max(audioRef.current.currentTime - 10, 0);
+      audioRef.current.currentTime = newTime;
+      setCurrentTime(newTime);
+    }
+  };
+
+  const skipForward = (e) => {
+    e.preventDefault();
+    if (audioRef.current) {
+      const dur = audioRef.current.duration || 0;
+      const newTime = Math.min(audioRef.current.currentTime + 10, dur);
+      audioRef.current.currentTime = newTime;
+      setCurrentTime(newTime);
+    }
+  };
+
+  const toggleMute = () => {
+    if (!audioRef.current) return;
+    audioRef.current.muted = !audioRef.current.muted;
+    setIsMuted(audioRef.current.muted);
+  };
+
+  const handleDownload = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await fetch(effectiveSrc);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.style.display = "none";
+      link.href = url;
+      link.download = 'Podcast.mp3';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Download failed", error);
+    }
+  };
+
+  const handleTimeUpdate = () => {
+    if (audioRef.current) {
+      setCurrentTime(audioRef.current.currentTime);
+    }
+  };
+
+  const handleLoadedMetadata = () => {
+    if (audioRef.current) {
+      setDuration(audioRef.current.duration);
+    }
+  };
+
+  const handleSeek = (e) => {
+    const seekTime = Number(e.target.value);
+    if (audioRef.current) {
+      audioRef.current.currentTime = seekTime;
+      setCurrentTime(seekTime);
+    }
+  };
+
+  return (
+    <div className="audio-player fade-in">
+      <audio
+        ref={audioRef}
+        src={effectiveSrc}
+        preload="metadata"
+        onTimeUpdate={handleTimeUpdate}
+        onLoadedMetadata={handleLoadedMetadata}
+        onEnded={() => setIsPlaying(false)}
+        onError={() => setFallback(true)}
+        controls={fallback}
+      >
+        <source src={effectiveSrc} type="audio/mpeg" />
+        Your browser does not support the audio element.
+      </audio>
+      <div className="audio-controls">
+        <button type="button" onClick={togglePlay} className="control-btn">
+          {isPlaying ? <Pause size={16} /> : <Play size={16} />}
+        </button>
+        <button type="button" onClick={skipBackward} className="control-btn">
+          <SkipBack size={16} />
+        </button>
+        <button type="button" onClick={skipForward} className="control-btn">
+          <SkipForward size={16} />
+        </button>
+        <button type="button" onClick={toggleMute} className="control-btn">
+          {isMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
+        </button>
+        <button type="button" onClick={handleDownload} className="control-btn">
+          <Download size={16} />
+        </button>
+        <button type="button" onClick={() => setShowShareModal(true)} className="control-btn share-btn">
+          <Share2 size={16} />
+        </button>
+
+      </div>
+      <div className="time-stamps">
+        <span className="current-time">{formatTime(currentTime)}</span>
+        <span className="duration-time">{formatTime(duration)}</span>
+      </div>
+      <input
+        type="range"
+        min="0"
+        max={duration || 0}
+        value={currentTime}
+        onChange={handleSeek}
+        className="audio-slider"
+      />
+      {showShareModal && (
+        <ShareModal type="audio" id={extractFileIdFromSrc(src)} onClose={() => setShowShareModal(false)} />
+)}
+
+    </div>
+  );
+};
+
+AudioPlayer.propTypes = {
+  src: PropTypes.string,
+};
+
+// ------------------------------------------------------
+// Main TextToSpeech Component
+// ------------------------------------------------------
+const TextToSpeech = () => {
+  // Speaker dropdown states
+  const [dropdownOpen, setDropdownOpen] = useState({
+    speaker1: false,
+    speaker2: false,
+  });
+  const toggleDropdown = (speakerKey) => {
+    setDropdownOpen((prev) => ({
+      ...prev,
+      [speakerKey]: !prev[speakerKey],
+    }));
+  };
+  const closeDropdowns = () => {
+    setDropdownOpen({ speaker1: false, speaker2: false });
+  };
+
+  const playSample = async (speakerId) => {
+    try {
+      const playIconElements = document.querySelectorAll(
+        `.play-icon[data-speaker="${speakerId}"]`
+      );
+      if (!playIconElements.length) return;
+      playIconElements.forEach((playIconElement) => {
+        const originalContent = playIconElement.innerHTML;
+        const sampleUrl = `/assets/Voices/sample_voice_${language}_${speakerId}.wav`;
+        const audio = new Audio(sampleUrl);
+        audio.onplay = () => {
+          const visualizer = document.createElement("div");
+          visualizer.className = "mini-visualizer";
+          for (let i = 0; i < 7; i++) {
+            const bar = document.createElement("div");
+            bar.className = "mini-bar";
+            visualizer.appendChild(bar);
+          }
+          playIconElement.innerHTML = "";
+          playIconElement.appendChild(visualizer);
+        };
+        audio.onended = () => {
+          playIconElement.innerHTML = originalContent;
+        };
+        audio.onerror = () => {
+          playIconElement.innerHTML = originalContent;
+          console.error("Audio playback error");
+        };
+        playIconElement.innerHTML = '<span className="loading-dot">...</span>';
+        audio.play().catch(() => {
+          playIconElement.innerHTML = originalContent;
+        });
+      });
+    } catch (error) {
+      console.error("Error playing sample:", error);
+    }
+  };
+
+  const [chats, setChats] = useState([]);
+  const [activeChatIndex, setActiveChatIndex] = useState(null);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [text, setText] = useState("");
+  const [language, setLanguage] = useState("en");
+  const [speaker1, setSpeaker1] = useState("");
+  const [speaker2, setSpeaker2] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [file, setFile] = useState(null);
+  const [duration1, setDuration1] = useState("");
+  const [darkMode, setDarkMode] = useState(false);
+  const [error, setError] = useState(null);
+
+  // New state for chat menu and deletion popup
+  const [openMenuChatId, setOpenMenuChatId] = useState(null);
+  const [showDeletePopup, setShowDeletePopup] = useState(false);
+  const [chatToDelete, setChatToDelete] = useState(null);
+
+  // New state for chat sharing modal
+  const [showChatShareModal, setShowChatShareModal] = useState(false);
+  const [shareChatId, setShareChatId] = useState("");
+
+  // For scroll-to-bottom button
+  const conversationContainerRef = useRef(null);
+  const [showScrollDown, setShowScrollDown] = useState(false);
+
+  const [showShareModal, setShowShareModal] = useState(false);
+
+  const token = localStorage.getItem("token");
+
+  // List of available speakers
+  const speakers = {
+    en: [
+      { name: "John", id: "p374" },
+      { name: "Daniel", id: "p250" },
+      { name: "Michael", id: "p231" },
+      { name: "Sophia", id: "p232" },
+      { name: "Emma", id: "p228" },
+      { name: "Olivia", id: "p243" },
+    ],
+    hi: [
+      { name: "Rahul", id: "v2/hi_speaker_1" },
+      { name: "Amit", id: "v2/hi_speaker_0" },
+      { name: "Emma", id: "v2/hi_speaker_2" },
+      { name: "Daniel", id: "v2/hi_speaker_5" },
+    ],
+    mr: [
+      { name: "Aarohi", id: "mr-IN-AarohiNeural" },
+      { name: "Manohar", id: "mr-IN-ManoharNeural" },
+    ],
+    gu: [
+      { name: "Dhwani", id: "gu-IN-DhwaniNeural" },
+      { name: "Niranjan", id: "gu-IN-NiranjanNeural" },
+    ],
+    es: [
+      { name: "Carlos", id: "es_speaker_1" },
+      { name: "Sofia", id: "es_speaker_2" },
+    ],
+    fr: [
+      { name: "Pierre", id: "fr_speaker_0" },
+      { name: "Marie", id: "fr_speaker_1" },
+    ],
+    de: [
+      { name: "Hans", id: "de_speaker_0" },
+      { name: "Anna", id: "de_speaker_1" },
+    ],
+    it: [
+      { name: "Luca", id: "it_speaker_0" },
+      { name: "Giulia", id: "it_speaker_1" },
+    ],
+    ja: [
+      { name: "Hiroshi", id: "ja_speaker_0" },
+      { name: "Yuki", id: "ja_speaker_1" },
+    ],
+    zh: [
+      { name: "Wei", id: "zh_speaker_0" },
+      { name: "Mei", id: "zh_speaker_1" },
+    ],
+    ru: [
+      { name: "Ivan", id: "ru_speaker_0" },
+      { name: "Anastasia", id: "ru_speaker_1" },
+    ],
+    pt: [
+      { name: "João", id: "pt_speaker_0" },
+      { name: "Maria", id: "pt_speaker_1" },
+    ],
+    ko: [
+      { name: "Min-Jun", id: "ko_speaker_0" },
+      { name: "Ji-Young", id: "ko_speaker_1" },
+    ],
+    tr: [
+      { name: "Mehmet", id: "tr_speaker_0" },
+      { name: "Elif", id: "tr_speaker_1" },
+    ],
+  };
+
+  // ------------------------------------------------------
+  // Load Chats from Backend
+  // ------------------------------------------------------
+  const loadChats = async () => {
+    setError(null);
+    try {
+      if (!token) {
+        setError("Authentication token required. Please log in.");
+        return;
+      }
+      const response = await axios.get(`${backendUrl}/api/chats`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      
+      // If no chats exist, create one and update state accordingly.
+      if (response.data.length === 0) {
+        const createResponse = await axios.post(
+          `${backendUrl}/api/chats/new`,
+          {},
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        const newChat = createResponse.data.chat;
+        newChat.title = newChat.title || "New Chat";
+        setChats([newChat]);
+
+        setActiveChatIndex(0);
+      } else {
+        setChats(response.data);
+
+
+              // Retrieve the active chat ID from local storage
+      const storedActiveChatId = localStorage.getItem("activeChatId");
+
+      // Find the index of the active chat in the loaded chats
+      if (storedActiveChatId) {
+        const activeIndex = response.data.findIndex(
+          (chat) => chat.chatId === storedActiveChatId
+        );
+        if (activeIndex !== -1) {
+          setActiveChatIndex(activeIndex);
+        } else {
+          setActiveChatIndex(0); // Fallback to the first chat if the stored chat ID is not found
+        }
+      } else {
+        setActiveChatIndex(0); // Default to the first chat if no active chat ID is stored
+      }
+      }
+    } catch (err) {
+      console.error("Error loading chats:", err);
+      setError(err.response?.data?.error || "Failed to load chats");
+    }
+  };
+
+  // ------------------------------------------------------
+  // Create New Chat
+  // ------------------------------------------------------
+  const createNewChat = async () => {
+    if (!token) {
+      setError("Authentication token required. Please log in.");
+      return;
+    }
+    try {
+      const response = await axios.post(
+        `${backendUrl}/api/chats/new`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      const newChat = response.data.chat;
+      newChat.title = newChat.title || "New Chat";
+      setChats((prevChats) => {
+        const updated = [...prevChats, newChat];
+        setActiveChatIndex(updated.length - 1);
+        localStorage.setItem("activeChatId", newChat.chatId);
+        return updated;
+      });
+    } catch (err) {
+      console.error("Failed to create new chat", err);
+      setError("Failed to create new chat");
+    }
+  };
+
+  // ------------------------------------------------------
+  // Load Chat-Specific Audio History
+  // ------------------------------------------------------
+  const loadChatAudioHistory = async (chatId) => {
+    setError(null);
+    try {
+      if (!token) {
+        setError("Authentication token required. Please log in.");
+        return;
+      }
+      const response = await axios.get(
+        `${backendUrl}/api/chats/${chatId}/audio`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      if (response.data && response.data.history) {
+        const historyAsConversation = response.data.history.map((file) => ({
+          _id: file._id,
+          query: file.requestedText,
+          audio: `${backendUrl}/api/tts-audio/${file._id}`,
+          timestamp: file.uploadDate,
+        }));
+        setChats((prevChats) =>
+          prevChats.map((c) => {
+            if (c.chatId === chatId) {
+              const existingConversation = c.conversation || [];
+              const merged = [...existingConversation];
+              historyAsConversation.forEach((hc) => {
+                const duplicate = merged.find((m) => m._id === hc._id);
+                if (!duplicate) {
+                  merged.push(hc);
+                }
+              });
+              merged.sort(
+                (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
+              );
+              return { ...c, conversation: merged };
+            }
+            return c;
+          })
+        );
+      }
+    } catch (err) {
+      console.error("Error loading chat audio history:", err);
+      setError(err.response?.data?.error || "Failed to load chat audio history");
+    }
+  };
+
+  // ------------------------------------------------------
+  // On first mount, load all chats
+  // ------------------------------------------------------
+  useEffect(() => {
+    if (token) {
+      loadChats();
+    }
+  }, [token]);
+
+  // ------------------------------------------------------
+  // Whenever activeChatIndex changes, load that chat's audio history
+  // Also store the active chatId in localStorage
+  // ------------------------------------------------------
+  useEffect(() => {
+    if (activeChatIndex !== null && chats[activeChatIndex]) {
+      const chatId = chats[activeChatIndex].chatId;
+      localStorage.setItem("activeChatId", chatId);
+      loadChatAudioHistory(chatId);
+    }
+  }, [activeChatIndex, chats]);
+
+  // ------------------------------------------------------
+  // Scroll Container: Show "scroll down" button if near the top
+  // ------------------------------------------------------
+  useEffect(() => {
+    const container = conversationContainerRef.current;
+    if (!container) return;
+    const handleScroll = () => {
+      const nearTop = container.scrollTop <= 50;
+      setShowScrollDown(nearTop);
+    };
+    container.addEventListener("scroll", handleScroll);
+    return () => container.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const scrollToBottom = () => {
+    if (conversationContainerRef.current) {
+      conversationContainerRef.current.scrollTop =
+        conversationContainerRef.current.scrollHeight;
+    }
+  };
+
+  const scrollConversationToBottom = () => {
+    if (conversationContainerRef.current) {
+      conversationContainerRef.current.scrollTop =
+        conversationContainerRef.current.scrollHeight;
+    }
+  };
+
+  // ------------------------------------------------------
+  // On new message or file
+  // ------------------------------------------------------
+  const handleTextChange = (e) => setText(e.target.value);
+  const handleFileUpload = (e) => {
+    if (e.target.files.length > 0) {
+      setFile(e.target.files[0]);
+      setText(`Processing file: ${e.target.files[0].name}`);
+    }
+  };
+
+  // ------------------------------------------------------
+  // Handle Sending TTS Request
+  // ------------------------------------------------------
+  const handleSend = async () => {
+    setError(null);
+    if (!token) {
+      setError("Authentication token required. Please log in.");
+      return;
+    }
+    if (!text.trim() && !file) {
+      setError("Please enter text or upload a file.");
+      return;
+    }
+    if (activeChatIndex === null || !chats[activeChatIndex]) {
+      setError("No active chat selected.");
+      return;
+    }
+    const currentChat = chats[activeChatIndex];
+    const userQuery = file ? `Uploaded file: ${file.name}` : text;
+    const newTitle = userQuery.substring(0, 30) || "Untitled Chat";
+    const currentConversation = currentChat.conversation || [];
+    setChats((prevChats) =>
+      prevChats.map((chat, index) => {
+        if (index === activeChatIndex) {
+          const updatedConversation = [
+            ...currentConversation,
+            {
+              query: userQuery,
+              audio: null,
+              timestamp: new Date().toISOString(),
+            },
+          ];
+          const updatedTitle =
+            !chat.title || chat.title === "New Chat" ? newTitle : chat.title;
+          return {
+            ...chat,
+            conversation: updatedConversation,
+            title: updatedTitle,
+          };
+        }
+        return chat;
+      })
+    );
+    if ((!currentChat.title || currentChat.title === "New Chat") && userQuery) {
+      try {
+        await axios.put(
+          `${backendUrl}/api/chats/${currentChat.chatId}`,
+          { title: newTitle },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+      } catch (err) {
+        console.error("Failed to update chat title:", err);
+      }
+    }
+    setLoading(true);
+    const formData = new FormData();
+    formData.append("token", token);
+    if (file) {
+      formData.append("file", file);
+    } else {
+      formData.append("text", text);
+    }
+    formData.append("language", language);
+    if (
+      [
+        "en",
+        "hi",
+        "mr",
+        "gu",
+        "es",
+        "fr",
+        "de",
+        "it",
+        "ja",
+        "zh",
+        "ru",
+        "pt",
+        "ko",
+        "tr",
+      ].includes(language)
+    ) {
+      if (speaker1) formData.append("speaker1", speaker1);
+      if (speaker2) formData.append("speaker2", speaker2);
+    }
+    if (duration1 && duration1 > 0) {
+      formData.append("duration1", duration1);
+    }
+    formData.append("chatId", currentChat.chatId);
+    try {
+      const flaskResponse = await axios.post(
+        "http://127.0.0.1:5000/generate",
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+          responseType: "blob",
+        }
+      );
+      const audioBlob = new Blob([flaskResponse.data], { type: "audio/mpeg" });
+      const tempAudioUrl = URL.createObjectURL(audioBlob);
+      setChats((prevChats) =>
+        prevChats.map((chat, index) => {
+          if (
+            index === activeChatIndex &&
+            chat.conversation &&
+            chat.conversation.length > 0
+          ) {
+            const updatedConversation = [...chat.conversation];
+            updatedConversation[updatedConversation.length - 1].audio =
+              tempAudioUrl;
+            return { ...chat, conversation: updatedConversation };
+          }
+          return chat;
+        })
+      );
+      const storeFormData = new FormData();
+      storeFormData.append("audio", audioBlob, "tts.mp3");
+      storeFormData.append("text", text);
+      storeFormData.append("chatId", currentChat.chatId);
+      const storeResponse = await axios.post(
+        `${backendUrl}/tts-audio`,
+        storeFormData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const { fileId } = storeResponse.data;
+      const permanentAudioUrl = `${backendUrl}/api/tts-audio/${fileId}`;
+      setChats((prevChats) =>
+        prevChats.map((chat, index) => {
+          if (
+            index === activeChatIndex &&
+            chat.conversation &&
+            chat.conversation.length > 0
+          ) {
+            const updatedConversation = [...chat.conversation];
+            const lastIndex = updatedConversation.length - 1;
+            updatedConversation[lastIndex]._id = fileId;
+            updatedConversation[lastIndex].audio = permanentAudioUrl;
+            return { ...chat, conversation: updatedConversation };
+          }
+          return chat;
+        })
+      );
+      await loadChatAudioHistory(currentChat.chatId);
+      scrollConversationToBottom();
+    } catch (err) {
+      console.error("Error generating/storing speech:", err);
+      setError(err.response?.data?.error || "Failed to generate or store speech");
+    } finally {
+      setLoading(false);
+      setText("");
+      setFile(null);
+    }
+  };
+
+  const activeChat = activeChatIndex !== null ? chats[activeChatIndex] : null;
+
+  // ------------------------------------------------------
+  // Handle Chat Share
+  // ------------------------------------------------------
+  const handleShareChat = (chat) => {
+    setShareChatId(chat.chatId);
+    setShowChatShareModal(true);
+    setOpenMenuChatId(null);
+  };
+
+
+  // ------------------------------------------------------
+  // Handle Chat Deletion Confirmation
+  // ------------------------------------------------------
+  const confirmDeleteChat = async () => {
+    if (!chatToDelete) return;
+    try {
+      await axios.delete(`${backendUrl}/api/chats/${chatToDelete.chatId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setChats((prevChats) =>
+        prevChats.filter((c) => c.chatId !== chatToDelete.chatId)
+      );
+      if (activeChat && activeChat.chatId === chatToDelete.chatId) {
+        setActiveChatIndex(0);
+        localStorage.removeItem("activeChatId"); // Clear the stored active chat ID
+      }
+      setShowDeletePopup(false);
+      setChatToDelete(null);
+    } catch (err) {
+      console.error("Failed to delete chat", err);
+      setError("Failed to delete chat");
+      setShowDeletePopup(false);
+      setChatToDelete(null);
+    }
+  };
+
+  const cancelDeleteChat = () => {
+    setShowDeletePopup(false);
+    setChatToDelete(null);
+  };
+
+  return (
+    <div className={`app-container ${darkMode ? "dark-mode" : ""}`}>
+      <div className="layout">
+        <div className={`sidebar-container ${sidebarOpen ? "" : "collapsed"}`}>
+          <div className={`chat-sidebar slide-in ${sidebarOpen ? "open" : "closed"}`}>
+            <div className="sidebar-header">
+              <h3>Chats</h3>
+              <button onClick={createNewChat} className="new-chat-btn">
+                <PlusCircle size={16} /> New Chat
+              </button>
+            </div>
+            <div className="chat-list">
+        {chats.length === 0 ? (
+          <p>No chats found.</p>
+        ) : (
+          chats.map((chat, index) => {
+            const displayTitle =
+              chat.title && chat.title.trim() !== ""
+                ? chat.title
+                : chat.chatId;
+            return (
+              <div
+                key={chat.chatId}
+                className={`chat-item ${
+                  activeChatIndex === index ? "active" : ""
+                } fade-in`}
+                onClick={() => setActiveChatIndex(index)}
+                style={{
+                  position: "relative",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center"
+                }}
+              >
+                <span>{displayTitle}</span>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setOpenMenuChatId(
+                      openMenuChatId === chat.chatId ? null : chat.chatId
+                    );
+                  }}
+                  className="menu-btn"
+                >
+                  <MoreHorizontal size={16} />
+                </button>
+                {openMenuChatId === chat.chatId && (
+                  <div
+                    className="chat-item-menu"
+                    style={{
+                      position: "absolute",
+                      right: "40px",
+                      top: "0",
+                      background: "#fff",
+                      border: "1px solid #ccc",
+                      zIndex: 10
+                    }}
+                  >
+                    <div
+                      className="menu-option"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleShareChat(chat);
+                      }}
+                      style={{
+                        padding: "5px 10px",
+                        cursor: "pointer",
+                        display: "flex",
+                        alignItems: "center"
+                      }}
+                    >
+                      <Share2 size={16} style={{ marginRight: "5px" }} /> Share Chat
+                    </div>
+                    <div
+                      className="menu-option delete-option"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setChatToDelete(chat);
+                        setShowDeletePopup(true);
+                        setOpenMenuChatId(null);
+                      }}
+                      style={{
+                        padding: "5px 10px",
+                        cursor: "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                        color: "red"
+                      }}
+                    >
+                      <Trash2 size={16} style={{ marginRight: "5px" }} /> Delete Chat
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })
+        )}
+      </div>
+          </div>
+        </div>
+        <button
+          className="sidebar-toggle-btn"
+          onClick={() => setSidebarOpen((prev) => !prev)}
+          style={{
+            borderRadius: "50%",
+            width: "40px",
+            height: "40px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          {sidebarOpen ? <ArrowLeft size={16} /> : <Menu size={16} />}
+        </button>
+        <div className="content-container">
+          <div className={`main-content ${sidebarOpen ? "" : "closed-sidebar"}`}>
+            <div className="navbar">
+              <h2>{activeChat ? activeChat.title || activeChat.chatId : "Chat"}</h2>
+              <button
+                onClick={() => setDarkMode(!darkMode)}
+                className="dark-mode-toggle"
+              >
+                {darkMode ? <Sun size={16} /> : <Moon size={16} />}
+              </button>
+            </div>
+            {error && (
+              <div className="error-banner fade-in">
+                <p>{error}</p>
+                <button onClick={() => setError(null)}>×</button>
+              </div>
+            )}
+            <div className="chat-layout">
+              <div
+                className="conversation-container"
+                ref={conversationContainerRef}
+              >
+                {activeChat &&
+                  activeChat.conversation &&
+                  activeChat.conversation.map((pair, index) => (
+                    <div key={index} className="conversation-pair fade-in">
+                      <div className="user-message">
+                        <p>{pair.query}</p>
+                      </div>
+                      <div className="assistant-message">
+                        {pair.audio ? (
+                          <AudioPlayer src={pair.audio} />
+                        ) : (
+                          <div className="loading-audio">Audio pending...</div>
+                        )}
+                        {pair.timestamp && (
+                          <small className="timestamp">
+                            {new Date(pair.timestamp).toLocaleString()}
+                          </small>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+              </div>
+              {showScrollDown && (
+                <button className="scroll-down-button" onClick={scrollToBottom}>
+                  <ArrowDownCircle size={24} />
+                </button>
+              )}
+              {loading && (
+                <div className="chat-bubble assistant fade-in">
+                  <p>Generating speech...</p>
+                </div>
+              )}
+              <div className="chat-input-fixed">
+                <textarea
+                  value={text}
+                  onChange={handleTextChange}
+                  placeholder="Type your message here..."
+                  disabled={loading}
+                />
+                <div className="input-controls"></div>
+                <div className="file-upload-wrapper">
+                  <input
+                    type="file"
+                    id="file-upload"
+                    accept=".txt,.pdf"
+                    onChange={handleFileUpload}
+                    disabled={loading}
+                  />
+                  <label htmlFor="file-upload" className="file-upload-label">
+                    {file ? file.name : "Upload File"}
+                  </label>
+                </div>
+                <div className="input-controls">
+                  <select
+                    value={language}
+                    onChange={(e) => {
+                      setLanguage(e.target.value);
+                      closeDropdowns();
+                    }}
+                    disabled={loading}
+                  >
+                    <option value="hi">Hindi</option>
+                    <option value="mr">Marathi</option>
+                    <option value="en">English</option>
+                    <option value="gu">Gujarati</option>
+                    <option value="es">Spanish</option>
+                    <option value="fr">French</option>
+                    <option value="de">German</option>
+                    <option value="it">Italian</option>
+                    <option value="ja">Japanese</option>
+                    <option value="zh">Chinese</option>
+                    <option value="ru">Russian</option>
+                    <option value="pt">Portuguese</option>
+                    <option value="ko">Korean</option>
+                    <option value="tr">Turkish</option>
+                  </select>
+                  <select
+                    value={duration1 || ""}
+                    onChange={(e) =>
+                      setDuration1(
+                        e.target.value === "" ? null : Number(e.target.value)
+                      )
+                    }
+                    disabled={loading}
+                  >
+                    <option value="">Select Duration</option>
+                    <option value={30}>30 seconds</option>
+                    <option value={60}>1 minute</option>
+                    <option value={120}>2 minutes</option>
+                    <option value={180}>3 minutes</option>
+                  </select>
+                  {(language === "en" ||
+                    language === "hi" ||
+                    language === "mr" ||
+                    language === "gu" ||
+                    language === "es" ||
+                    language === "fr" ||
+                    language === "de" ||
+                    language === "it" ||
+                    language === "ja" ||
+                    language === "zh" ||
+                    language === "ru" ||
+                    language === "pt" ||
+                    language === "ko" ||
+                    language === "tr") && (
+                    <>
+                      <div className="speaker-selection">
+                        <div
+                          className="speaker-dropdown"
+                          onClick={() => toggleDropdown("speaker1")}
+                        >
+                          <div className="selected-value">
+                            {speaker1
+                              ? speakers[language].find((sp) => sp.id === speaker1)
+                                  ?.name
+                              : "Select Speaker 1"}
+                          </div>
+                          {dropdownOpen.speaker1 && (
+                            <div className="speaker-options options-above">
+                              {speakers[language] &&
+                                speakers[language].map((sp) => (
+                                  <div
+                                    key={sp.id}
+                                    className={`speaker-option ${
+                                      speaker1 === sp.id ? "selected" : ""
+                                    }`}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setSpeaker1(sp.id);
+                                      toggleDropdown("speaker1");
+                                    }}
+                                  >
+                                    <span>{sp.name}</span>
+                                    <span
+                                      className="play-icon"
+                                      data-speaker={sp.id}
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        playSample(sp.id);
+                                      }}
+                                    >
+                                      ▶
+                                    </span>
+                                  </div>
+                                ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                      <div className="speaker-selection">
+                        <div
+                          className="speaker-dropdown"
+                          onClick={() => toggleDropdown("speaker2")}
+                        >
+                          <div className="selected-value">
+                            {speaker2
+                              ? speakers[language].find((sp) => sp.id === speaker2)
+                                  ?.name
+                              : "Select Speaker 2"}
+                          </div>
+                          {dropdownOpen.speaker2 && (
+                            <div className="speaker-options options-above">
+                              {speakers[language] &&
+                                speakers[language].map((sp) => (
+                                  <div
+                                    key={sp.id}
+                                    className={`speaker-option ${
+                                      speaker2 === sp.id ? "selected" : ""
+                                    }`}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setSpeaker2(sp.id);
+                                      toggleDropdown("speaker2");
+                                    }}
+                                  >
+                                    <span>{sp.name}</span>
+                                    <span
+                                      className="play-icon"
+                                      data-speaker={sp.id}
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        playSample(sp.id);
+                                      }}
+                                    >
+                                      ▶
+                                    </span>
+                                  </div>
+                                ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </>
+                  )}
+                  <button
+                    onClick={() => {
+                      handleSend();
+                      setText("");
+                    }}
+                    disabled={loading}
+                  >
+                    {loading ? "Generating..." : "Send"}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {showDeletePopup && (
+        <div className="modal-overlay" style={{ position: "fixed", top:0, left:0, right:0, bottom:0, background: "rgba(0,0,0,0.5)", backdropFilter: "blur(4px)", zIndex: 1000, display:"flex", alignItems:"center", justifyContent:"center" }}>
+          <div className="modal-content" style={{ background: "#fff", padding: "20px", borderRadius: "8px", textAlign: "center" }}>
+            <p>Are you sure you want to delete this chat?</p>
+            <div className="modal-actions" style={{ marginTop: "15px", display:"flex", justifyContent:"space-around" }}>
+              <button onClick={confirmDeleteChat} className="confirm-delete" style={{ background: "red", color: "#fff", padding:"10px", border:"none", borderRadius:"4px", display:"flex", alignItems:"center", gap:"5px" }}>
+                <Trash2 size={16} /> Yes, Delete
+              </button>
+              <button onClick={cancelDeleteChat} style={{ padding:"10px", border:"none", borderRadius:"4px" }}>
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+            {showChatShareModal && (
+        <ShareModal
+          type="chat"
+          id={shareChatId}
+          onClose={() => setShowChatShareModal(false)}
+        />
+      )}
+    </div>
+  );
+};
+
+export default TextToSpeech;
+
+/* ---------------------------------- */
+/* 1. Global Resets & Defaults        */
+/* ---------------------------------- */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+body,
+html {
+  font-family: Arial, sans-serif;
+}
+
+/* ---------------------------------- */
+/* 2. App & Layout Containers         */
+/* ---------------------------------- */
+.app-container {
+  width: 100%;
+  /* Removed top margin so the sidebar sits flush at the very top */
+}
+.layout {
+  display: flex;
+  transition: all 0.3s ease;
+}
+
+/* ---------------------------------- */
+/* 3. Spacing Fixes & Chat Layout     */
+/* ---------------------------------- */
+
+/* 1) Conversation container: scrollable, smooth scrolling, fixed max-height */
+.conversation-container {
+  max-height: 250px;        /* or any height you prefer */
+  overflow-y: auto;
+  padding: 10px;
+  border: 1px solid #ccc;
+  scroll-behavior: smooth;  /* smooth scrolling on programmatic scroll */
+  position: relative;
+  background-color: #fff;
+  flex: 1;
+  min-height: 40vh;
+  overflow-y: auto;
+}
+
+/* 2) Optional custom scrollbar (WebKit only) */
+.conversation-container::-webkit-scrollbar {
+  width: 8px;
+}
+.conversation-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+.conversation-container::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+.conversation-container::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* 3) Fade-in animation for conversation pairs */
+.conversation-pair.fade-in {
+  animation: fadeIn 0.3s ease-in forwards;
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Absolutely position the scroll-down button at bottom-left */
+.scroll-down-button {
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
+  z-index: 10;
+  border: none;
+  background-color: #fff;
+  border-radius: 50%;
+  padding: 0.4rem;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Optional hover/focus styles */
+.scroll-down-button:hover {
+  background-color: #f0f0f0;
+}
+
+
+
+
+.chat-layout {
+  min-height: auto !important;
+}
+.audio-messages-container {
+  margin-bottom: 0 !important;
+  padding-bottom: 0 !important;
+}
+.chat-input-fixed {
+  margin-top: 1px !important;
+  padding-top: 20px !important;
+}
+.conversation-pair {
+  margin-bottom: 10px !important;
+}
+.chat-list {
+  padding: 15px !important;
+}
+.chat-item {
+  margin-bottom: 6px !important;
+}
+
+/* ---------------------------------- */
+/* 4. Sidebar Container               */
+/* ---------------------------------- */
+.sidebar-container {
+  height: 100vh;
+  overflow-y: auto;
+}
+.sidebar-container.collapsed {
+  width: 0;
+}
+
+/* ---------------------------------- */
+/* 5. Chat Sidebar                    */
+/* ---------------------------------- */
+.chat-sidebar {
+  width: 250px;
+  background-color: #f4f4f4;
+  border-right: 1px solid #ddd;
+  overflow-y: auto;
+  transition: transform 0.3s ease;
+  position: sticky;
+  top: 0;
+}
+.chat-sidebar.closed {
+  transform: translateX(-100%);
+}
+.chat-sidebar.open {
+  transform: translateX(0);
+}
+
+/* ---------------------------------- */
+/* 6. Content Container & Main Content*/
+/* ---------------------------------- */
+.content-container {
+  flex: 1;
+  transition: margin-left 0.3s ease;
+}
+.main-content {
+  padding: 20px;
+  position: relative;
+  
+}
+.closed-sidebar {
+  margin-left: 0;
+}
+
+/* ---------------------------------- */
+/* 7. Header, Navbar & Toggle Buttons */
+/* ---------------------------------- */
+.sidebar-toggle-btn {
+  background-color: #007bff;
+  border: none;
+  color: #fff;
+  padding: 6px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  margin: 5px;
+  margin-top: 50px;
+}
+.sidebar-toggle-btn:hover {
+  background-color: #0056b3;
+}
+.sidebar-header {
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+  background-color: #f4f4f4;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 40px;
+}
+.new-chat-btn {
+  background-color: #28a745;
+  border: none;
+  color: #fff;
+  padding: 6px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.2s;
+}
+.new-chat-btn:hover {
+  background-color: #218838;
+}
+
+/* ---------------------------------- */
+/* 8. Chat List & Chat Items          */
+/* ---------------------------------- */
+.chat-list {
+  padding: 10px;
+}
+.chat-item {
+  padding: 8px;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.chat-item:hover {
+  background-color: #f1f3f5;
+}
+.chat-item.active {
+  background-color: #007bff;
+  color: #fff;
+}
+
+/* ---------------------------------- */
+/* 9. Navbar & Dark Mode Toggle       */
+/* ---------------------------------- */
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.navbar h2 {
+  font-size: 24px;
+}
+.dark-mode-toggle {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+/* ---------------------------------- */
+/* 10. Error Banner                   */
+/* ---------------------------------- */
+.error-banner {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+  padding: 10px 15px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.error-banner button {
+  background: transparent;
+  border: none;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+/* ---------------------------------- */
+/* 11. Chat Layout & Messages         */
+/* ---------------------------------- */
+.chat-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+.audio-messages-container {
+  padding: 10px 20px;
+  margin-bottom: 0;
+}
+.conversation-pair {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 24px;
+  gap: 12px;
+  animation: fadeIn 0.3s ease;
+}
+.user-message, .assistant-message {
+  max-width: 90%;
+}
+.user-message {
+  align-self: flex-end; /* This puts user messages on the right */
+  background-color: #e1f5fe;
+  border-radius: 18px 18px 0 18px;
+  padding: 14px 18px;
+  max-width: 80%;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+.assistant-message {
+  align-self: flex-start; /* This puts assistant responses on the left */
+  max-width: 80%;
+}
+.loading-audio {
+  color: #888;
+  font-style: italic;
+}
+
+/* ---------------------------------- */
+/* 12. Fixed Chat Input               */
+/* ---------------------------------- */
+.chat-input-fixed {
+  
+  border-top: 1px solid #ddd;
+  padding: 10px;
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  padding-top: 0;
+}
+.chat-input-fixed textarea {
+  width: 100%;
+  height: 80px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  resize: none;
+  margin-bottom: 5px;
+}
+.file-upload-wrapper {
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+}
+.file-upload-wrapper input[type="file"] {
+  display: none;
+}
+.file-upload-label {
+  background-color: #007bff;
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+/* ---------------------------------- */
+/* 13. Input Controls                 */
+/* ---------------------------------- */
+.input-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+.input-controls select,
+.input-controls button {
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+  cursor: pointer;
+  font-size: 14px;
+}
+.input-controls button {
+  background-color: #28a745;
+  color: #fff;
+  border: none;
+  transition: background 0.2s;
+}
+.input-controls button:hover {
+  background-color: #218838;
+}
+.input-controls button.loading {
+  background-color: #6c757d;
+  cursor: not-allowed;
+}
+
+/* ---------------------------------- */
+/* 14. Audio Player Styles            */
+/* ---------------------------------- */
+.audio-player {
+  background-color: #f8f9fa;
+  border-radius: 10px;
+  padding: 14px;
+  width: 100%;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s;
+}
+
+.audio-controls {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+  align-items: center;
+}
+
+.control-btn {
+  background: transparent;
+  border: none;
+  padding: 8px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #555;
+  transition: all 0.2s;
+  width: 36px;
+  height: 36px;
+}
+.time-stamps {
+  font-size: 12px;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 5px;
+}
+.audio-slider {
+  width: 100%;
+}
+
+/* ---------------------------------- */
+/* 15. Sequential Audio Player        */
+/* ---------------------------------- */
+.sequential-audio-player {
+  margin-top: 20px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: #f8f9fa;
+}
+.player-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.player-status {
+  font-size: 14px;
+  color: #555;
+}
+.progress-bar {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  width: 100%;
+}
+
+/* ---------------------------------- */
+/* 16. Audio History Section          */
+/* ---------------------------------- */
+.audio-history {
+  margin-bottom: 0;
+  max-height: 300px;
+  overflow-y: auto;
+}
+.audio-history h3 {
+  margin-bottom: 10px;
+  font-size: 18px;
+}
+.play-all-btn {
+  background-color: #007bff;
+  border: none;
+  color: #fff;
+  padding: 6px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  margin-bottom: 10px;
+  transition: background 0.2s;
+}
+.play-all-btn:hover {
+  background-color: #0056b3;
+}
+.history-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+.history-item {
+  border: 1px solid #eee;
+  border-radius: 4px;
+  padding: 10px;
+  background-color: #fafafa;
+}
+.history-timestamp {
+  font-size: 12px;
+  color: #888;
+  margin-bottom: 5px;
+}
+.requested-text {
+  font-size: 14px;
+  margin-bottom: 5px;
+}
+
+/* ---------------------------------- */
+/* 17. Fade In Animation              */
+/* ---------------------------------- */
+.fade-in {
+  animation: fadeIn 0.3s ease-in;
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ---------------------------------- */
+/* 18. Dark Mode Overrides            */
+/* ---------------------------------- */
+.dark-mode {
+  background-color: #1a1a1a;
+  color: #eaeaea;
+}
+.dark-mode .chat-sidebar {
+  background-color: #2c2c2c;
+  border-color: #444;
+}
+.dark-mode .sidebar-header,
+.dark-mode .chat-list {
+  border-color: #444;
+}
+.dark-mode .chat-item {
+  border-color: #444;
+}
+.dark-mode .chat-item:hover {
+  background-color: #3a3a3a;
+}
+.dark-mode .main-content {
+  background-color: #1a1a1a;
+}
+.dark-mode .navbar h2 {
+  color: #eaeaea;
+}
+.dark-mode .error-banner {
+  background-color: #4f2a2d;
+  color: #f8d7da;
+  border-color: #f5c6cb;
+}
+.dark-mode .user-message {
+  background-color: #444;
+  color: #fff;
+}
+.dark-mode .assistant-message {
+  background-color: #333;
+  color: #fff;
+}
+.dark-mode .loading-audio {
+  color: #bbb;
+}
+.dark-mode .chat-input-fixed {
+  background-color: #2c2c2c;
+  border-top-color: #444;
+}
+.dark-mode textarea {
+  background-color: #333;
+  color: #eaeaea;
+  border: 1px solid #555;
+}
+.dark-mode .file-upload-label {
+  background-color: #007bff;
+}
+.dark-mode .input-controls select,
+.dark-mode .input-controls button {
+  background-color: #333;
+  color: #eaeaea;
+  border: 1px solid #555;
+}
+.dark-mode .new-chat-btn {
+  background-color: #007bff;
+}
+.dark-mode .audio-player {
+  background-color: #2c2c2c;
+  border-color: #444;
+}
+.dark-mode .sequential-audio-player {
+  background-color: #2c2c2c;
+  border-color: #444;
+}
+
+/* ---------------------------------- */
+/* 19. Responsive Adjustments         */
+/* ---------------------------------- */
+@media (max-width: 768px) {
+  .layout {
+    flex-direction: column;
+  }
+  .sidebar-container {
+    width: 100%;
+    
+  }
+  .chat-sidebar {
+    position: absolute;
+    z-index: 100;
+    width: 250px;
+    height: 100vh;
+    top: 0;
+    left: 0;
+  }
+  .sidebar-container.collapsed {
+    width: 0;
+  }
+  .content-container {
+    margin-top: 0 !important;
+  }
+}
+
+/* ==================================== */
+/* 20. New Speaker Selection & Audio Enhancements */
+/* (From Code 2: Hover dropdown with playback) */
+/* ==================================== */
+/* Updated Dropdown UI for Speaker Selection */
+.speaker-selection {
+  display: flex;
+  flex-direction: column;
+  margin: 4px 0;
+  position: relative;
+  font-size: 14px;
+}
+
+.speaker-selection label {
+  margin-bottom: 4px;
+  color: #333;
+}
+
+.speaker-dropdown {
+  position: relative;
+  width: 100%;
+}
+
+.selected-value {
+  padding: 8px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+  cursor: pointer;
+  position: relative;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.selected-value:hover,
+.selected-value:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 1px #007bff;
+}
+
+.speaker-options {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  z-index: 100;
+  max-height: 180px;
+  overflow-y: auto;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-top: 2px; /* Minimal space between the selected value and options */
+  opacity: 0;
+  visibility: hidden;
+  /* bottom: 100%;
+  top:0; */
+  margin-bottom: 2px;
+  transform: translateY(5px);
+  transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease;
+}
+
+.options-above {
+  top: auto;
+  bottom: 100%;
+  margin-top: 0;
+  margin-bottom: 2px;
+  transform-origin: bottom center;
+}
+
+.speaker-dropdown:hover .options-above,
+.speaker-dropdown:focus-within .options-above {
+  transform: translateY(-5px);
+}
+.speaker-dropdown:hover .speaker-options,
+.speaker-dropdown:focus-within .speaker-options {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.speaker-option {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 10px; /* Reduced padding for minimal spacing */
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.speaker-option:hover {
+  background-color: #f5f5f5;
+}
+
+.speaker-option.selected {
+  background-color: #e6f7ff;
+  font-weight: bold;
+}
+
+.play-icon {
+  margin-left: 6px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  color: #1890ff;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.speaker-option:hover .play-icon {
+  opacity: 1;
+}
+
+/* Dark mode overrides */
+.dark-mode .selected-value {
+  background-color: #333;
+  border-color: #555;
+  color: #f0f0f0;
+}
+
+.dark-mode .speaker-options {
+  background-color: #444;
+  border-color: #666;
+  color: #f0f0f0;
+}
+
+.dark-mode .speaker-option:hover {
+  background-color: #555;
+}
+
+.dark-mode .speaker-option.selected {
+  background-color: #2a3f5c;
+}
+
+
+/* Mini Visualizer for Sample Playback */
+.mini-visualizer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 20px;
+  width: 20px;
+  gap: 1px;
+}
+.mini-bar {
+  width: 2px;
+  background-color: #2196F3;
+  border-radius: 1px;
+  animation: mini-sound-wave 1.2s infinite ease-in-out;
+  transform-origin: center;
+}
+.mini-bar:nth-child(1) { height: 50%; animation-delay: 0.0s; }
+.mini-bar:nth-child(2) { height: 30%; animation-delay: 0.1s; }
+.mini-bar:nth-child(3) { height: 70%; animation-delay: 0.2s; }
+.mini-bar:nth-child(4) { height: 40%; animation-delay: 0.3s; }
+.mini-bar:nth-child(5) { height: 50%; animation-delay: 0.4s; }
+.mini-bar:nth-child(6) { height: 35%; animation-delay: 0.5s; }
+.mini-bar:nth-child(7) { height: 45%; animation-delay: 0.6s; }
+@keyframes mini-sound-wave {
+  0%, 100% { transform: scaleY(1); }
+  50% { transform: scaleY(0.7); }
+}
+
+/* Optional: Waveform Styling */
+.clean-waveform-player {
+  width: 100%;
+  margin: 10px 0;
+  border-radius: 4px;
+  overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
+.waveform-container {
+  width: 100%;
+  cursor: pointer;
+  background-color: #f8f8f8;
+  padding: 10px 0;
+  border-radius: 4px 4px 0 0;
+}
+.clean-waveform {
+  width: 100%;
+  height: 60px;
+  background-color: white;
+}
+.player-controls {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  background-color: #f8f8f8;
+  border-radius: 0 0 4px 4px;
+}
+.play-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #fff;
+  color: #555;
+  margin-right: 10px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+.play-button:hover {
+  background-color: #f0f0f0;
+}
+.time-display {
+  font-size: 12px;
+  color: #666;
+}
+.current-time, .duration {
+  font-family: monospace;
+}
+.time-separator {
+  margin: 0 2px;
+  color: #999;
+}
+.waveform-loading {
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f8f8f8;
+  font-size: 14px;
+  color: #666;
+}
+/* Three dots button styling */
+.menu-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Chat item menu container */
+.chat-item-menu {
+  position: absolute;
+  right: 40px;
+  top: 0;
+  min-width: 140px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  z-index: 10;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+/* Light mode styles */
+:not(.dark-mode) .chat-item-menu {
+  background: #fff;
+  color: #333;
+}
+
+/* Dark mode styles */
+.dark-mode .chat-item-menu {
+  background: #333;
+  color: #f0f0f0;
+  border-color: #555;
+}
+
+/* Menu options common style */
+.chat-item-menu .menu-option {
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+/* Hover effects */
+.chat-item-menu .menu-option:hover {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.dark-mode .chat-item-menu .menu-option:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Delete option style (red text) */
+.chat-item-menu .delete-option {
+  color: red;
+}
+
+/* Optional: If you want a slight separator between options */
+.chat-item-menu .menu-option + .menu-option {
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.dark-mode .chat-item-menu .menu-option + .menu-option {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}

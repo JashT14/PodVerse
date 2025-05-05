@@ -1,0 +1,382 @@
+
+/* Base containers */
+.profile-view-wrapper {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 24px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  color: #333;
+}
+
+.profile-main-container {
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+  padding: 32px;
+  overflow: hidden;
+}
+
+/* Header styling */
+.profile-title-header {
+  margin-bottom: 24px;
+  border-bottom: 1px solid #eaeaea;
+  padding-bottom: 16px;
+}
+
+.profile-title-text {
+  font-size: 28px;
+  font-weight: 600;
+  color: #2c3e50;
+  margin: 0;
+}
+
+/* Profile card styling */
+.profile-details-card {
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  padding: 24px;
+  margin-bottom: 24px;
+}
+
+.profile-details-row {
+  display: flex;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px dashed #e0e0e0;
+}
+
+.profile-details-row:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.profile-field-label {
+  font-weight: 600;
+  width: 140px;
+  color: #555;
+}
+
+.profile-field-value {
+  flex: 1;
+  color: #2c3e50;
+}
+
+/* Button styling */
+.profile-primary-actions {
+  margin-bottom: 20px;
+}
+
+.profile-edit-button {
+  background-color: #3498db;
+  color: white;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  width: 100%;
+}
+
+.profile-edit-button:hover {
+  background-color: #2980b9;
+}
+
+.profile-secondary-actions {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.profile-password-button,
+.profile-email-button {
+  flex: 1;
+  background-color: #f5f5f5;
+  color: #333;
+  padding: 10px 16px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.profile-password-button:hover,
+.profile-email-button:hover {
+  background-color: #e8e8e8;
+}
+
+.profile-button-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.profile-button-disabled:hover {
+  background-color: #f5f5f5;
+}
+
+/* Message and notice styling */
+.profile-google-notice {
+  background-color: #fcf8e3;
+  color: #8a6d3b;
+  padding: 12px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  text-align: center;
+}
+
+.profile-login-message,
+.profile-error-display {
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  padding: 24px;
+  text-align: center;
+  margin: 40px auto;
+  max-width: 600px;
+}
+
+.profile-login-message {
+  color: #3498db;
+  font-size: 18px;
+}
+
+.profile-error-display {
+  color: #e74c3c;
+  font-size: 16px;
+}
+
+/* Loading state styling */
+.profile-loading-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  text-align: center;
+}
+
+.profile-loading-spinner {
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #3498db;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 16px;
+}
+
+.profile-loading-text {
+  color: #777;
+  font-size: 16px;
+}
+
+.profile-avatar-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.profile-avatar-image {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  border: 3px solid #ffffff;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Media queries for responsiveness */
+@media (max-width: 600px) {
+  .profile-view-wrapper {
+    padding: 16px;
+  }
+  
+  .profile-main-container {
+    padding: 20px;
+  }
+  
+  .profile-secondary-actions {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .profile-details-row {
+    flex-direction: column;
+  }
+  
+  .profile-field-label {
+    width: 100%;
+    margin-bottom: 4px;
+  }
+}
+
+/* profile pic normal user*/
+/* Make sure these styles exist in your ProfileView.css */
+.profile-avatar-container {
+  width: 120px;
+  height: 120px;
+  margin: 0 auto 20px;
+  border-radius: 50%;
+  overflow: hidden;
+  position: relative;
+}
+
+.profile-avatar-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Add specific styling for the letter avatar in profile view */
+.profile-avatar-container .letter-avatar {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+/* Dark mode using class selector */
+.dark-mode .profile-view-wrapper {
+  color: #e0e0e0;
+  
+}
+
+.dark-mode .profile-main-container {
+  background-color: #1e1e1e;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+.dark-mode .profile-title-header {
+  border-bottom-color: #333;
+}
+
+.dark-mode .profile-title-text {
+  color: #e0e0e0;
+}
+
+.dark-mode .profile-details-card {
+  background-color: #2a2a2a;
+}
+
+.dark-mode .profile-details-row {
+  border-bottom-color: #444;
+}
+
+.dark-mode .profile-field-label {
+  color: #aaa;
+}
+
+.dark-mode .profile-field-value {
+  color: #e0e0e0;
+}
+
+.dark-mode .profile-password-button,
+.dark-mode .profile-email-button {
+  background-color: #333;
+  color: #e0e0e0;
+  border-color: #555;
+}
+
+.dark-mode .profile-password-button:hover,
+.dark-mode .profile-email-button:hover {
+  background-color: #444;
+}
+
+.dark-mode .profile-google-notice {
+  background-color: #3c3218;
+  color: #e5d18b;
+}
+
+.dark-mode .profile-login-message {
+  background-color: #1e1e1e;
+  color: #4dabf5;
+}
+
+.dark-mode .profile-error-display {
+  background-color: #1e1e1e;
+  color: #f07470;
+}
+
+.dark-mode .profile-loading-spinner {
+  border-color: #333;
+  border-top-color: #3498db;
+}
+
+.dark-mode .profile-loading-text {
+  color: #aaa;
+}
+
+.dark-mode .profile-avatar-image {
+  border-color: #333;
+}
+
+.dark-mode .profile-button-disabled {
+  opacity: 0.4;
+}
+
+.dark-mode .profile-button-disabled:hover {
+  background-color: #333;
+}
+
+.dark-mode .profile-edit-button {
+  background-color: #2980b9;
+}
+
+.dark-mode .profile-edit-button:hover {
+  background-color: #3498db;
+}
+/* Enhanced mobile responsiveness */
+@media (max-width: 600px) {
+  .profile-view-wrapper {
+    padding: 12px;
+  }
+  
+  .profile-main-container {
+    padding: 16px;
+    border-radius: 8px;
+  }
+  
+  .profile-title-text {
+    font-size: 24px;
+  }
+  
+  .profile-details-card {
+    padding: 16px;
+  }
+  
+  .profile-details-row {
+    flex-direction: column;
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+  }
+  
+  .profile-field-label {
+    width: 100%;
+    margin-bottom: 6px;
+  }
+  
+  .profile-secondary-actions {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .profile-edit-button,
+  .profile-password-button,
+  .profile-email-button {
+    padding: 10px 16px;
+    font-size: 14px;
+  }
+  
+  .profile-avatar-container {
+    width: 100px;
+    height: 100px;
+  }
+}

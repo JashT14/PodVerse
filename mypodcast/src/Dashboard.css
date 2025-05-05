@@ -1,0 +1,1009 @@
+/* Dashboard.css */
+:root {
+  /* Light mode variables */
+  --background-color: white;
+  --text-color: #333;
+  --secondary-text-color: #666;
+  --border-color: #eaeaea;
+  --card-background: #f8f9fa;
+  --card-hover-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  --stat-background: #f5f5f5;
+  --error-background: #ffebee;
+  --error-text: #f44336;
+  --primary-color: #4285f4;
+  --primary-hover: #3367d6;
+  --danger-color: #f44336;
+  --danger-hover: #d32f2f;
+}
+
+.dark-mode {
+  /* Dark mode variables */
+  --background-color: #121212;
+  --text-color: #e0e0e0;
+  --secondary-text-color: #aaaaaa;
+  --border-color: #333333;
+  --card-background: #1e1e1e;
+  --card-hover-shadow: 0 4px 8px rgba(0,0,0,0.3);
+  --stat-background: #2d2d2d;
+  --error-background: #4a1e1e;
+  --error-text: #ff6b6b;
+  --primary-color: #5c9eff;
+  --primary-hover: #80b4ff;
+  --danger-color: #ff5252;
+  --danger-hover: #ff7b7b;
+}
+
+/* Apply variables to all elements */
+body {
+  background-color: var(--background-color);
+  color: var(--text-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.dashboard-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+  position: relative;
+  z-index: 1;
+}
+
+.dashboard-header{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-color);
+}
+
+h1{
+  color: var(--text-color);
+}
+
+.user-stats {
+  display: flex;
+  gap: 20px;
+}
+
+.stat-item {
+  background: var(--stat-background);
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 14px;
+  color: var(--text-color);
+}
+
+.logout-button {
+  background-color: var(--danger-color);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.logout-button:hover {
+  background-color: var(--danger-hover);
+}
+
+.dashboard-tabs {
+  display: flex;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.tab-button {
+  padding: 10px 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  position: relative;
+  color: var(--text-color);
+}
+
+.tab-button.active {
+  font-weight: bold;
+  color: var(--primary-color);
+}
+
+.tab-button.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background-color: var(--primary-color);
+}
+
+.loading-indicator {
+  text-align: center;
+  padding: 50px;
+  color: var(--secondary-text-color);
+}
+
+.error-message {
+  text-align: center;
+  padding: 20px;
+  color: var(--error-text);
+  background-color: var(--error-background);
+  border-radius: 4px;
+}
+
+.tts-history-list, .chats-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.tts-history-item, .chat-item {
+  background: var(--card-background);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 15px;
+  transition: all 0.2s ease;
+}
+
+.tts-history-item:hover, .chat-item:hover {
+  box-shadow: var(--card-hover-shadow);
+}
+
+.tts-text {
+  margin-bottom: 10px;
+  font-size: 16px;
+  color: var(--text-color);
+}
+
+.tts-controls, .chat-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.tts-history-item {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  border-radius: 8px;
+  background-color: var(--card-background);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.tts-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.75rem;
+}
+
+.tts-text {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: var(--text-color);
+  flex: 1;
+}
+
+.tts-date {
+  font-size: 0.8rem;
+  color: var(--secondary-text-color);
+  white-space: nowrap;
+  margin-left: 1rem;
+}
+
+.tts-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.audio-player-container {
+  flex: 1;
+  margin-right: 1rem;
+  background-color: var(--background-color);
+}
+
+.share-button {
+  padding: 0.5rem 1rem;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.share-button:hover {
+  background-color: var(--primary-hover);
+}
+
+.audio-player {
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.audio-player audio {
+  width: 100%;
+  background-color: var(--card-background);
+  color: var(--text-color);
+}
+
+.tts-meta {
+  display: flex;
+  gap: 15px;
+  font-size: 14px;
+  color: var(--secondary-text-color);
+  align-items: center;
+}
+/* 
+.chats-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+} */
+
+.create-chat-button {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.create-chat-button:hover {
+  background-color: var(--primary-hover);
+}
+
+.chat-title {
+  font-weight: bold;
+  font-size: 18px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  color: var(--text-color);
+}
+
+.edit-title-button, .share-button, .delete-button {
+  padding: 6px 12px;
+  margin-left: 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.edit-title-button {
+  background-color: var(--stat-background);
+  color: var(--text-color);
+}
+
+.edit-title-button:hover {
+  opacity: 0.9;
+}
+
+.share-button {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.share-button:hover {
+  background-color: var(--primary-hover);
+}
+
+.delete-button {
+  background-color: var(--danger-color);
+  color: white;
+}
+
+.delete-button:hover {
+  background-color: var(--danger-hover);
+}
+
+.no-history, .no-chats {
+  text-align: center;
+  padding: 30px;
+  color: var(--secondary-text-color);
+  font-style: italic;
+}
+
+.shared-links-container {
+  width: 100%;
+  margin-top: 20px;
+}
+
+.shared-links-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.shared-link-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  margin-bottom: 10px;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.shared-link-info {
+  flex: 1;
+}
+
+.shared-link-title {
+  font-weight: bold;
+  font-size: 16px;
+  margin-bottom: 5px;
+}
+
+.shared-link-metadata {
+  display: flex;
+  gap: 20px;
+  font-size: 14px;
+  color: #666;
+}
+
+.shared-link-controls {
+  display: flex;
+  gap: 10px;
+}
+.copy-link-button {
+  background-color: var(--primary-color);
+}
+
+.extend-link-button {
+  background-color: var(--primary-hover);
+}
+
+.delete-link-button {
+  background-color: var(--danger-color);
+}
+
+.copy-link-button:hover {
+  background-color: var(--primary-hover);
+}
+
+.extend-link-button:hover {
+  opacity: 0.9;
+}
+
+.delete-link-button:hover {
+  background-color: var(--danger-hover);
+}
+
+/* Sorting Controls */
+
+  /* Sort Controls */
+
+  .sort-toggle-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background: var(--bg-color);
+    color: var(--text-color);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+  }
+
+
+
+  .sort-icon {
+    width: 18px;
+    height: 18px;
+    fill: currentColor;
+  }
+
+  .sort-options-menu {
+    position: absolute;
+    right: -1px;
+    top: calc(100% + 8px);
+    background: var(--bg-color);
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    min-width: 180px;
+    z-index: 1001;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+
+  @keyframes slideIn {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .sort-order-section,
+  .sort-criteria-section {
+    padding: 8px 0;
+  }
+
+  .sort-divider {
+    height: 1px;
+    background: #ddd;
+    margin: 4px 0;
+  }
+
+  .sort-option {
+    width: 100%;
+    padding: 8px 16px;
+    text-align: left;
+    background: transparent;
+    border: none;
+    color: var(--text-color);
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .sort-option:hover {
+    background: var(--hover-bg-color);
+  }
+
+
+
+  .sort-container:hover .sort-options-menu,
+  .sort-toggle-button:focus + .sort-options-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  /* Dark Mode */
+  .dark-mode .sort-toggle-button {
+    border-color: #555;
+    background: #2a2a2a;
+  }
+
+  .dark-mode .sort-options-menu {
+    border-color: #555;
+    background: #2a2a2a;
+  }
+
+  .dark-mode .sort-divider {
+    background: #444;
+  }
+
+  .dark-mode .sort-option:hover {
+    background: #3a3a3a;
+  }
+
+  .dark-mode .sort-option.active {
+    background: #404040;
+  }
+
+  /* Light Mode */
+  .light-mode .sort-toggle-button {
+    background: #fff;
+  }
+
+  .light-mode .sort-options-menu {
+    background: #fff;
+  }
+
+  .light-mode .sort-option:hover {
+    background: #f5f5f5;
+  }
+
+  .light-mode .sort-option.active {
+    background: #e0e0e0;
+  }
+
+
+
+  .sort-controls {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+    padding: 15px;
+    border-radius: 8px;
+    background-color: #f5f5f5;
+  }
+
+  .light-mode .sort-controls {
+    background-color: #f5f5f5;
+    border: 1px solid #e0e0e0;
+  }
+
+  .dark-mode .sort-controls {
+    background-color: #2a2a2a;
+    border: 1px solid #3a3a3a;
+  }
+
+  .sort-order, .sort-by {
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+  }
+
+  .sort-label {
+    display: flex;
+    align-items: center;
+    margin-right: 20px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+
+  .light-mode .sort-label {
+    color: #333;
+  }
+
+  .dark-mode .sort-label {
+    color: #e0e0e0;
+  }
+
+  .sort-label input[type="radio"] {
+    margin-right: 8px;
+    cursor: pointer;
+  }
+
+  .sort-controls h4 {
+    margin: 0 0 10px 0;
+    font-size: 16px;
+    font-weight: 500;
+  }
+
+  .light-mode .sort-controls h4 {
+    color: #444;
+  }
+
+  .dark-mode .sort-controls h4 {
+    color: #ccc;
+  }
+
+  @media (max-width: 768px) {
+    .sort-controls {
+      padding: 10px;
+    }
+    
+    .sort-order, .sort-by {
+      flex-direction: column;
+    }
+    
+    .sort-label {
+      margin-bottom: 8px;
+    }
+  }
+
+  /* dashboard-filter Controls */
+  .dashboard-filter-container {
+    position: relative;
+    display: inline-block;
+    margin-left: 1rem;
+    z-index: 1010; /* Increased z-index to ensure it appears above other elements */
+  }
+
+  .dashboard-filter-dropdown {
+    position: relative;
+    display: inline-block;
+  }
+
+  .dashboard-filter-toggle-button {
+    display: flex;
+    position: relative;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: var(--card-background);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    transform: translateY(-5px); 
+  }
+
+  .dashboard-filter-toggle-button:hover {
+    background: var(--stat-background);
+    border-color: var(--primary-color);
+  }
+
+  .dashboard-filter-icon {
+    width: 18px;
+    height: 18px;
+    fill: currentColor;
+  }
+
+  .dashboard-filter-options-menu {
+    position: absolute;
+    top: calc(100% + 5px);
+    right: 0;
+    background: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    min-width: 180px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.2s ease;
+    z-index: 1020; /* Higher z-index to ensure dropdown is above other elements */
+  }
+
+  /* Show dashboard-filter options on hover */
+  .dashboard-filter-dropdown:hover .dashboard-filter-options-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  /* Alternative method to show dashboard-filter options - add this class with JavaScript */
+  .dashboard-filter-options-menu.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  .dashboard-filter-option {
+    display: block;
+    width: 100%;
+    padding: 10px 16px;
+    background: none;
+    border: none;
+    text-align: left;
+    color: var(--text-color);
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .dashboard-filter-option:hover {
+    background: var(--stat-background);
+  }
+
+  .dashboard-filter-option.active {
+    background: var(--primary-color);
+    color: white;
+    font-weight: 500;
+  }
+
+  /* Controls Container */
+  .controls-container {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    margin-left: auto;
+    position: relative;
+    z-index: 1005; /* Ensure controls are above most elements */
+  }
+
+  /* Updated Header Styles */
+  .tts-history-container > h2,
+  .chats-header,
+  .shared-links-container > h2 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 1.5rem;
+    position: relative; /* Establish positioning context for children */
+  }
+
+  /* Sort Controls - Match dashboard-filter Controls */
+  .sort-container {
+    position: relative;
+    display: inline-block;
+    margin-left: 1rem;
+    z-index: 1010; /* Match dashboard-filter container z-index */
+  }
+
+  .sort-options-menu {
+    z-index: 1020; /* Match dashboard-filter options z-index */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    min-width: 180px;
+  }
+
+  
+
+  /* Fix for Dark Mode */
+  .dark-mode .dashboard-filter-toggle-button,
+  .dark-mode .sort-toggle-button {
+    border-color: #444;
+  }
+
+  .dark-mode .dashboard-filter-options-menu,
+  .dark-mode .sort-options-menu {
+    border-color: #444;
+    background: #2a2a2a;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+
+/* Fix Shared Links Items */
+.shared-link-item {
+  background: var(--card-background);
+  border: 1px solid var(--border-color);
+  color: var(--text-color);
+  border-radius: 6px;
+  padding: 16px;
+  margin-bottom: 12px;
+  transition: all 0.2s ease;
+}
+
+.shared-link-item:hover {
+  border-color: var(--primary-color-light);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.shared-link-metadata span {
+  color: var(--secondary-text-color);
+  font-size: 0.9rem;
+}
+
+/* Button Consistency */
+
+.copy-link-button,
+.extend-link-button,
+.delete-link-button {
+  padding: 6px 12px;
+border: none;
+border-radius: 4px;
+color: white;
+cursor: pointer;
+transition: background-color 0.2s;
+font-size: 0.9rem;
+font-weight: 500;
+}
+
+.copy-link-button:hover,
+.extend-link-button:hover,
+.delete-link-button:hover {
+opacity: 0.9;
+}
+
+.delete-link-button {
+background-color: var(--error-color);
+}
+
+.copy-link-button {
+background-color: var(--success-color);
+}
+
+.extend-link-button {
+background-color: var(--primary-color);
+}
+
+/* Layout Fixes */
+/* .chats-header {
+display: flex;
+flex-wrap: wrap;
+gap: 1rem;
+align-items: center;
+margin: 25px;
+} */
+
+.create-chat-button {
+  order: 1;
+  padding: 8px 16px;
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+font-weight: 500;
+}
+
+.create-chat-button:hover {
+background: var(--primary-color-dark);
+}
+
+/* Mobile responsiveness improvements */
+@media (max-width: 768px) {
+/* General container adjustments */
+.dashboard-container {
+  padding: 12px;
+}
+
+/* Header adjustments */
+.dashboard-header {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 15px;
+}
+
+.user-stats {
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+/* Tab adjustments */
+.dashboard-tabs {
+  overflow-x: auto;
+  width: 100%;
+  padding: 1px;
+}
+
+.tab-button {
+  padding: 8px 12px;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+/* TTS history item adjustments */
+.tts-history-item, .chat-item {
+  padding: 12px 10px;
+}
+
+.tts-header {
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.tts-date {
+  margin-left: 0;
+  margin-top: 5px;
+}
+
+/* Audio player controls - make it full width and stack controls */
+.tts-controls {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.audio-player-container {
+  margin-right: 0;
+  margin-bottom: 10px;
+  width: 100%;
+}
+.share-button {
+  width: 100%;
+  margin-top: 8px;
+  padding: 8px;
+}
+
+/* Chat controls adjustments */
+.chat-controls {
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.edit-title-button, .share-button, .delete-button {
+  padding: 6px 10px;
+  margin-left: 0;
+  flex: 1;
+  text-align: center;
+  font-size: 13px;
+}
+
+/* Shared links adjustments */
+.shared-link-item {
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 12px 10px;
+}
+
+.shared-link-metadata {
+  flex-direction: column;
+  gap: 5px;
+  margin-bottom: 10px;
+}
+
+.shared-link-controls {
+  width: 100%;
+  justify-content: space-between;
+}
+
+.copy-link-button {
+  background-color: #4285f4;
+  color: white;
+}
+
+.extend-link-button {
+  background-color: #34a853;
+  color: white;
+}
+
+.copy-link-button,
+.extend-link-button,
+.delete-link-button {
+  flex: 1;
+  text-align: center;
+  padding: 8px 5px;
+  font-size: 13px;
+  margin: 0 3px;
+}
+
+/* Sort/dashboard-filter controls */
+.controls-container {
+  flex-wrap: wrap;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 10px;
+}
+
+.dashboard-filter-container,
+.sort-container {
+  vertical-align: middle; /* <-- add this */
+  margin-left: 0;
+  flex: 1;
+  max-width: 48%;
+}
+
+.dashboard-filter-toggle-button,
+.sort-toggle-button {
+  width: 100%;
+  justify-content: center;
+  padding: 8px;
+  display: inline-flex;    /* instead of block/flex */
+  align-items: center;     /* you already have this */
+  vertical-align: middle;  /* make sure the button boxes align */
+}
+.sort-icon,
+.dashboard-filter-icon {
+  vertical-align: middle;
+}
+
+
+.dashboard-filter-options-menu,
+.sort-options-menu {
+  width: 160px;
+  right: 0;
+}
+
+/* Fix for sort/dashboard-filter menu position on smaller screens */
+.dashboard-filter-options-menu,
+.sort-options-menu {
+  left: auto;
+  right: 0;
+}
+
+
+/* Prevent text overflow */
+.tts-text, .chat-title, .shared-link-title {
+  word-break: break-word;
+}
+
+/* Reduce element spacing */
+.tts-history-item, .chat-item, .shared-link-item {
+  margin-bottom: 10px;
+}
+}
+
+/* Extra small devices (phones) */
+@media (max-width: 480px) {
+.stat-item {
+  padding: 6px 8px;
+  font-size: 12px;
+}
+
+.logout-button {
+  padding: 6px 10px;
+  font-size: 13px;
+}
+
+.create-chat-button {
+  width: 100%;
+  padding: 10px;
+  font-size: 14px;
+}
+
+.dashboard-filter-container,
+.sort-container {
+  max-width: 100%;
+  margin-bottom: 8px;
+}
+
+/* Make buttons more touch-friendly */
+.dashboard-filter-toggle-button,
+.sort-toggle-button,
+.share-button,
+.copy-link-button,
+.extend-link-button,
+.delete-link-button,
+.logout-button {
+  min-height: 40px;
+}
+}

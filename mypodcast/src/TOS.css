@@ -1,0 +1,345 @@
+/* TOS.css - Styling for PodVerse Terms of Service */
+p{
+  display: flex;
+  text-align: center;
+}
+/* Base styles */
+.TOS-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  line-height: 1.6;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  border-radius: 25px;
+}
+
+/* Light mode (default) */
+.TOS-container {
+  background-color: #ffffff;
+  color: #333333;
+}
+
+/* Dark mode */
+.dark-mode .TOS-container {
+  background-color: #1d1c1c;
+  color: #e0e0e0;
+}
+
+/* Header styles */
+.TOS-header {
+  text-align: center;
+  margin-bottom: 3rem;
+  border-bottom: 1px solid #e0e0e0;
+  padding-bottom: 1.5rem;
+  animation: fadeIn 0.8s ease-in-out;
+}
+
+.dark-mode .TOS-header {
+  border-bottom-color: #333;
+}
+
+.TOS-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: #9d74ff;
+}
+
+.dark-mode .TOS-title {
+  color: #9d74ff;
+}
+
+.TOS-effective-date {
+  font-size: 1rem;
+  color: #666;
+  font-style: italic;
+  justify-content: center;
+}
+
+.dark-mode .TOS-effective-date {
+  color: #aaa;
+}
+
+/* Main content */
+.TOS-main {
+  animation: slideUp 0.6s ease-in-out;
+}
+
+.TOS-section {
+  margin-bottom: 3.5rem;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  text-align: center;
+  justify-content: center;
+}
+
+.TOS-section-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  text-align: center;
+  color: #9a70fe;
+  padding-left: 1rem;
+  transition: border-color 0.3s ease, color 0.3s ease;
+}
+
+.TOS-section-title::after{
+  background-color: #8b5afb;
+  transition: width 0.4s ease;
+}
+
+.dark-mode .TOS-section-title {
+  color: #9a70fe;
+  border-left-color: #8b5afb;
+}
+
+.TOS-paragraph {
+  margin-bottom: 1rem;
+  transition: color 0.3s ease;
+  text-align: center;
+  justify-content: center;
+}
+
+/* Responsibility grid */
+.TOS-responsibility-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.TOS-responsibility-card {
+  border-radius: 8px;
+  padding: 1.5rem;
+  background-color: #f7f9ff;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+}
+
+.dark-mode .TOS-responsibility-card {
+  background-color: #1e2235;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.TOS-responsibility-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.08);
+}
+
+.dark-mode .TOS-responsibility-card:hover {
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
+}
+
+.TOS-card-title {
+  font-size: 1.2rem;
+  margin-bottom: 0.75rem;
+  color: #8b5afb;
+  font-weight: 600;
+}
+
+.dark-mode .TOS-card-title {
+  color: #8b5afb;
+}
+
+.TOS-card-text {
+  color: #555;
+  font-size: 0.95rem;
+}
+
+.dark-mode .TOS-card-text {
+  color: #bbb;
+}
+
+/* Contact section */
+.TOS-contact-section {
+  background-color: #f7f9ff;
+  padding: 2rem;
+  border-radius: 8px;
+  text-align: center;
+  transition: background-color 0.3s ease;
+}
+
+.dark-mode .TOS-contact-section {
+  background-color: #1e2235;
+}
+
+.TOS-link {
+  color: #9a70fe;
+  text-decoration: none;
+  font-weight: 500;
+  position: relative;
+  transition: color 0.3s ease;
+  display: flex;
+  justify-content: center;
+}
+
+.TOS-link::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: -2px;
+  left: 0;
+  background-color: #2a64d8;
+  transition: width 0.3s ease;
+}
+
+.TOS-link:hover::after {
+  width: 100%;
+}
+
+.dark-mode .TOS-link {
+  color: #9a70fe;
+}
+
+.dark-mode .TOS-link::after {
+  background-color: #639fff;
+}
+
+/* Footer */
+.TOS-footer {
+  margin-top: 3rem;
+  padding-top: 1.5rem;
+  text-align: center;
+  border-top: 1px solid #e0e0e0;
+  animation: fadeIn 1s ease-in-out;
+}
+
+.dark-mode .TOS-footer {
+  border-top-color: #333;
+}
+
+.TOS-copyright {
+  font-size: 0.875rem;
+  color: #777;
+  text-align: center;
+  justify-content: center;
+}
+
+.dark-mode .TOS-copyright {
+  color: #888;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+  .TOS-container {
+    padding: 1.5rem;
+  }
+  
+  .TOS-title {
+    font-size: 2.2rem;
+  }
+  
+  .TOS-section-title {
+    font-size: 1.4rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .TOS-container {
+    padding: 1.2rem;
+  }
+  
+  .TOS-header {
+    margin-bottom: 2rem;
+  }
+  
+  .TOS-title {
+    font-size: 1.8rem;
+  }
+  
+  .TOS-section-title {
+    font-size: 1.3rem;
+  }
+  
+  .TOS-responsibility-grid {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1.2rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .TOS-container {
+    padding: 1rem;
+  }
+  
+  .TOS-header {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+  }
+  
+  .TOS-title {
+    font-size: 1.6rem;
+  }
+  
+  .TOS-effective-date {
+    font-size: 0.9rem;
+  }
+  
+  .TOS-section-title {
+    font-size: 1.2rem;
+    border-left-width: 3px;
+  }
+  
+  .TOS-paragraph {
+    font-size: 0.95rem;
+  }
+  
+  .TOS-responsibility-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .TOS-responsibility-card {
+    padding: 1.2rem;
+  }
+  
+  .TOS-contact-section {
+    padding: 1.5rem;
+  }
+}
+
+/* Print styles */
+@media print {
+  .TOS-container {
+    padding: 0;
+    max-width: 100%;
+  }
+  
+  .TOS-header, .TOS-section, .TOS-footer {
+    margin-bottom: 1.5rem;
+  }
+  
+  .TOS-responsibility-card {
+    box-shadow: none;
+    border: 1px solid #ddd;
+  }
+  
+  .TOS-link::after {
+    display: none;
+  }
+  
+  .TOS-link {
+    text-decoration: underline;
+  }
+}

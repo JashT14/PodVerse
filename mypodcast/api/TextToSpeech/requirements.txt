@@ -1,0 +1,14 @@
+asyncio
+edge_tts
+PyPDF2
+scikit-learn
+numpy
+googletrans
+pydub
+flask
+flask_cors
+flask[async]
+openai
+langdetect
+TTS
+transformers

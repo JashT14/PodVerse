@@ -1,0 +1,633 @@
+/* AudioBgRemover.css */
+
+:root {
+  /* Light theme variables */
+  --light-bg-primary: #ffffff;
+  --light-bg-secondary: #f9fafb;
+  --light-bg-tertiary: #f3f4f6;
+  --light-bg-success: #f0fdf4;
+  --light-bg-error: #fee2e2;
+  --light-text-primary: #1a1a1a;
+  --light-text-secondary: #4b5563;
+  --light-text-tertiary: #6b7280;
+  --light-text-muted: #9ca3af;
+  --light-text-success: #10b981;
+  --light-text-error: #b91c1c;
+  --light-border-primary: #e5e7eb;
+  --light-border-secondary: #dcfce7;
+  --light-border-error: #fecaca;
+  --light-button-primary-bg: linear-gradient(135deg, #6366f1 0%, #3b82f6 100%);
+  --light-button-primary-disabled: linear-gradient(135deg, #c4b5fd 0%, #93c5fd 100%);
+  --light-button-success-bg: #10b981;
+  --light-button-success-hover: #059669;
+  --light-accent-primary: #3b82f6;
+  --light-accent-primary-hover: #2563eb;
+  --light-accent-primary-transparent: rgba(59, 130, 246, 0.1);
+  --light-spinner-border: #e5e7eb;
+  --light-record-btn-active: #ef4444;
+  --light-record-btn-border-active: #dc2626;
+
+  /* Dark theme variables */
+  --dark-bg-primary: #121212;
+  --dark-bg-secondary: #1e1e1e;
+  --dark-bg-tertiary: #2d2d2d;
+  --dark-bg-success: #0f2922;
+  --dark-bg-error: #3b1618;
+  --dark-text-primary: #f3f4f6;
+  --dark-text-secondary: #d1d5db;
+  --dark-text-tertiary: #9ca3af;
+  --dark-text-muted: #6b7280;
+  --dark-text-success: #34d399;
+  --dark-text-error: #f87171;
+  --dark-border-primary: #374151;
+  --dark-border-secondary: #065f46;
+  --dark-border-error: #7f1d1d;
+  --dark-button-primary-bg: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%);
+  --dark-button-primary-disabled: linear-gradient(135deg, #5b21b6 0%, #1e40af 100%);
+  --dark-button-success-bg: #059669;
+  --dark-button-success-hover: #047857;
+  --dark-accent-primary: #60a5fa;
+  --dark-accent-primary-hover: #93c5fd;
+  --dark-accent-primary-transparent: rgba(96, 165, 250, 0.1);
+  --dark-spinner-border: #374151;
+  --dark-record-btn-active: #b91c1c;
+  --dark-record-btn-border-active: #991b1b;
+}
+
+/* Base styles */
+.podverse-cleaner-container {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 2.5rem;
+  border-radius: 1rem;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  transition: all 0.3s ease;
+  background-color: var(--light-bg-primary);
+  color: var(--light-text-primary);
+}
+
+.podverse-cleaner-header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.podverse-cleaner-title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  background: var(--light-button-primary-bg);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.podverse-cleaner-subtitle {
+  font-size: 1rem;
+  color: var(--light-text-tertiary);
+  margin: 0 auto;
+  max-width: 80%;
+}
+
+/* Recording section */
+.podverse-cleaner-recording-section {
+  width: 100%;
+  margin-bottom: 1.5rem;
+}
+.podverse-cleaner-recording-time {
+  color: #666;
+  font-size: 0.9em;
+}
+
+.podverse-cleaner-record-button-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.podverse-cleaner-record-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem 2rem;
+  border: 2px solid var(--light-border-primary);
+  border-radius: 0.75rem;
+  font-size: 1rem;
+  font-weight: 500;
+  background-color: var(--light-bg-secondary);
+  color: var(--light-text-primary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+  max-width: 300px;
+}
+
+.podverse-cleaner-record-button:hover {
+  background-color: var(--light-bg-tertiary);
+  transform: translateY(-1px);
+}
+
+.podverse-cleaner-record-button.recording {
+  background-color: var(--light-record-btn-active);
+  border-color: var(--light-record-btn-border-active);
+  color: white;
+  
+}
+
+.record-icon-start,
+.record-icon-stop {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  margin-right: 10px;
+  border-radius: 50%;
+  background-color: var(--light-record-btn-active);
+}
+
+.record-icon-stop {
+  position: relative;
+  background-color: white;
+}
+
+.record-icon-stop::after {
+  content: '';
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 10px;
+  height: 10px;
+  background-color: var(--light-record-btn-active);
+  border-radius: 2px;
+}
+
+/* Dropzone styles */
+.podverse-cleaner-dropzone {
+  border: 2px dashed var(--light-border-primary);
+  border-radius: 1rem;
+  padding: 2.5rem 1.5rem;
+  margin: 1.5rem 0;
+  transition: all 0.2s ease;
+  background-color: var(--light-bg-secondary);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.podverse-dropzone-active {
+  border-color: var(--light-accent-primary);
+  background-color: var(--light-accent-primary-transparent);
+}
+
+.podverse-cleaner-dropzone-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.podverse-cleaner-upload-icon {
+  width: 48px;
+  height: 48px;
+  margin-bottom: 1rem;
+  color: var(--light-text-tertiary);
+}
+
+.podverse-cleaner-input {
+  display: none;
+}
+
+.podverse-cleaner-label {
+  font-size: 1rem;
+  color: var(--light-accent-primary);
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  background-color: var(--light-accent-primary-transparent);
+  transition: all 0.2s ease;
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.podverse-cleaner-label:hover {
+  background-color: rgba(59, 130, 246, 0.15);
+}
+
+.podverse-cleaner-file-info {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.podverse-cleaner-file-status {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-weight: 500;
+  color: #333;
+}
+.podverse-cleaner-file-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 0.5rem;
+}
+.podverse-cleaner-file-status p {
+  margin: 0;
+  font-weight: 500;
+  color: #6b7280;
+}
+.podverse-cleaner-clear-button {
+  background: none;
+  border: none;
+  color: #dc3545;
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.podverse-cleaner-clear-button:hover {
+  background-color: #f8d7da;
+}
+
+.podverse-cleaner-supported-formats {
+  color: var(--light-text-muted);
+  font-size: 0.875rem;
+  margin: 0.5rem 0 0;
+  text-align: center;
+}
+
+/* Progress bar */
+.podverse-cleaner-progress-container {
+  margin: 1.5rem 0;
+}
+
+.podverse-cleaner-progress-bar {
+  height: 6px;
+  border-radius: 3px;
+  background-color: var(--light-border-primary);
+  overflow: hidden;
+}
+
+.podverse-cleaner-progress-fill {
+  height: 100%;
+  border-radius: 3px;
+  background: var(--light-button-primary-bg);
+  transition: width 0.3s ease;
+}
+
+.podverse-cleaner-progress-text {
+  font-size: 0.875rem;
+  color: var(--light-text-tertiary);
+  margin-top: 0.5rem;
+  text-align: right;
+}
+
+/* Main button */
+.podverse-cleaner-button {
+  display: block;
+  width: 100%;
+  padding: 1rem 2rem;
+  border: none;
+  border-radius: 0.75rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: white;
+  background: var(--light-button-primary-bg);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin-top: 1.5rem;
+}
+
+.podverse-cleaner-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+}
+
+.podverse-cleaner-button:disabled {
+  background: var(--light-button-primary-disabled);
+  cursor: not-allowed;
+  opacity: 0.7;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Spinner */
+.podverse-cleaner-spinner-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 2rem 0;
+}
+
+.podverse-cleaner-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--light-spinner-border);
+  border-top-color: var(--light-accent-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.podverse-cleaner-spinner-text {
+  margin-top: 1rem;
+  color: var(--light-text-secondary);
+  font-size: 0.875rem;
+}
+
+/* Error message */
+.podverse-cleaner-error {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  margin: 1.5rem 0;
+  border-radius: 0.5rem;
+  background-color: var(--light-bg-error);
+  border: 1px solid var(--light-border-error);
+  color: var(--light-text-error);
+}
+
+.podverse-cleaner-error svg {
+  width: 24px;
+  height: 24px;
+  margin-right: 1rem;
+  flex-shrink: 0;
+}
+
+.podverse-cleaner-error p {
+  margin: 0;
+  font-size: 0.875rem;
+}
+.podverse-cleaner-duration {
+  color: #666;
+  font-size: 0.9em;
+  text-align: center;
+  margin-top: 0.5rem;
+}
+.podverse-cleaner-supported-formats {
+  margin-top: 1rem;
+  font-size: 0.9em;
+  color: #666;
+  text-align: center;
+}
+
+/* Download section */
+.podverse-cleaner-download {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  border-radius: 1rem;
+  background-color: var(--light-bg-success);
+  border: 1px solid var(--light-border-secondary);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.podverse-cleaner-download-button {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  background-color: var(--light-button-success-bg);
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  margin-bottom: 1rem;
+}
+
+.podverse-cleaner-download-button:hover {
+  background-color: var(--light-button-success-hover);
+  transform: translateY(-1px);
+}
+
+.podverse-cleaner-download-button svg {
+  width: 20px;
+  height: 20px;
+  margin-right: 0.5rem;
+}
+
+/* Audio player */
+
+.podverse-cleaner-audio-preview,
+.podverse-cleaner-audio-player {
+  width: 100%;
+  margin: 1rem 0;
+  
+  border-radius: 8px;
+  
+}
+
+.podverse-cleaner-audio-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+/* Separator */
+.podverse-cleaner-separator {
+  display: flex;
+  align-items: center;
+  margin: 1.5rem 0;
+  color: var(--light-text-muted);
+  width: 100%;
+}
+
+.podverse-cleaner-separator::before,
+.podverse-cleaner-separator::after {
+  content: "";
+  flex: 1;
+  border-bottom: 1px solid var(--light-border-primary);
+}
+
+.podverse-cleaner-separator span {
+  padding: 0 1rem;
+  font-size: 0.875rem;
+}
+
+/* Animations */
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+  70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Dark mode */
+.dark-mode .podverse-cleaner-container {
+  background-color: var(--dark-bg-primary);
+  color: var(--dark-text-primary);
+}
+
+.dark-mode .podverse-cleaner-title {
+  background-color: var(--dark-bg-primary);
+}
+
+.dark-mode .podverse-cleaner-subtitle {
+  color: var(--dark-text-tertiary);
+}
+
+.dark-mode .podverse-cleaner-record-button {
+  background-color: var(--dark-bg-secondary);
+  border-color: var(--dark-border-primary);
+  color: var(--dark-text-primary);
+}
+
+.dark-mode .podverse-cleaner-record-button:hover {
+  background-color: var(--dark-bg-tertiary);
+}
+
+.dark-mode .podverse-cleaner-record-button.recording {
+  background-color: var(--dark-record-btn-active);
+  border-color: var(--dark-record-btn-border-active);
+}
+
+.dark-mode .podverse-cleaner-dropzone {
+  border-color: var(--dark-border-primary);
+  background-color: var(--dark-bg-secondary);
+}
+
+.dark-mode .podverse-dropzone-active {
+  border-color: var(--dark-accent-primary);
+  background-color: var(--dark-accent-primary-transparent);
+}
+
+/* .dark-mode .podverse-cleaner-file-info {
+  background-color: var(--dark-bg-tertiary);
+} */
+
+.dark-mode .podverse-cleaner-file-status {
+  color: var(--dark-text-secondary);
+}
+
+.dark-mode .podverse-cleaner-clear-button {
+  color: var(--dark-accent-primary);
+}
+
+.dark-mode .podverse-cleaner-clear-button:hover {
+  background-color: var(--dark-accent-primary-transparent);
+}
+
+.dark-mode .podverse-cleaner-label {
+  color: var(--dark-accent-primary);
+  background-color: var(--dark-accent-primary-transparent);
+}
+
+.dark-mode .podverse-cleaner-label:hover {
+  background-color: rgba(96, 165, 250, 0.2);
+}
+
+.dark-mode .podverse-cleaner-supported-formats {
+  color: var(--dark-text-muted);
+}
+
+.dark-mode .podverse-cleaner-progress-bar {
+  background-color: var(--dark-border-primary);
+}
+
+.dark-mode .podverse-cleaner-progress-fill {
+  background: var(--dark-button-primary-bg);
+}
+
+.dark-mode .podverse-cleaner-progress-text {
+  color: var(--dark-text-tertiary);
+}
+
+.dark-mode .podverse-cleaner-button {
+  background: var(--dark-button-primary-bg);
+}
+
+.dark-mode .podverse-cleaner-button:disabled {
+  background: var(--dark-button-primary-disabled);
+}
+
+.dark-mode .podverse-cleaner-spinner {
+  border-color: var(--dark-spinner-border);
+  border-top-color: var(--dark-accent-primary);
+}
+
+.dark-mode .podverse-cleaner-spinner-text {
+  color: var(--dark-text-secondary);
+}
+
+.dark-mode .podverse-cleaner-error {
+  background-color: var(--dark-bg-error);
+  border-color: var(--dark-border-error);
+  color: var(--dark-text-error);
+}
+
+.dark-mode .podverse-cleaner-download {
+  background-color: var(--dark-bg-success);
+  border-color: var(--dark-border-secondary);
+}
+
+.dark-mode .podverse-cleaner-download-button {
+  background-color: var(--dark-button-success-bg);
+}
+
+.dark-mode .podverse-cleaner-download-button:hover {
+  background-color: var(--dark-button-success-hover);
+}
+
+.dark-mode .podverse-cleaner-separator::before,
+.dark-mode .podverse-cleaner-separator::after {
+  border-color: var(--dark-border-primary);
+}
+
+.dark-mode .podverse-cleaner-separator {
+  color: var(--dark-text-muted);
+}
+
+.dark-mode .podverse-cleaner-audio-player {
+  background-color: var(--dark-bg-tertiary);
+  color: var(--dark-text-primary);
+}
+
+/* Responsive design */
+@media (max-width: 640px) {
+  .podverse-cleaner-container {
+    padding: 1.5rem;
+    margin: 1rem;
+    border-radius: 0.75rem;
+  }
+  
+  .podverse-cleaner-title {
+    font-size: 1.75rem;
+  }
+  
+  .podverse-cleaner-subtitle {
+    max-width: 95%;
+    font-size: 0.875rem;
+  }
+  
+  .podverse-cleaner-dropzone {
+    padding: 1.5rem 1rem;
+  }
+  
+  .podverse-cleaner-record-button {
+    padding: 0.75rem 1.5rem;
+    font-size: 0.875rem;
+  }
+  
+  .podverse-cleaner-label {
+    font-size: 0.875rem;
+    padding: 0.75rem 1.25rem;
+  }
+  
+  .podverse-cleaner-button {
+    padding: 0.875rem 1.5rem;
+    font-size: 0.925rem;
+  }
+  
+  .podverse-cleaner-download-button {
+    padding: 0.625rem 1.25rem;
+    font-size: 0.875rem;
+  }
+}

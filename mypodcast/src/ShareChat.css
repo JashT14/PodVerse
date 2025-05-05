@@ -1,0 +1,255 @@
+/* ShareChat.css */
+
+/* Base styles and variables */
+:root {
+  /* Light mode variables */
+  --primary-color: #4a6cf7;
+  --secondary-color: #6c7a89;
+  --success-color: #27ae60;
+  --error-color: #e74c3c;
+  --text-color: #2c3e50;
+  --light-text: #7f8c8d;
+  --border-color: #ecf0f1;
+  --bg-color: #ffffff;
+  --hover-bg: #f5f7fa;
+  --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --error-bg: #fef6f6;
+  --transition: all 0.3s ease;
+}
+
+/* Dark mode variables */
+.dark-mode {
+  --primary-color: #5d7bff;
+  --secondary-color: #a0aec0;
+  --success-color: #2ecc71;
+  --error-color: #e74c3c;
+  --text-color: #e2e8f0;
+  --light-text: #a0aec0;
+  --border-color: #2d3748;
+  --bg-color: #1a202c;
+  --hover-bg: #2d3748;
+  --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  --error-bg: #42262a;
+}
+
+
+
+/* Main container */
+.shared-chat-container {
+  max-width: 850px;
+  margin: 0 auto;
+  padding: 30px 20px;
+  color: var(--text-color);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background-color: var(--bg-color);
+  transition: var(--transition);
+}
+
+/* Header styles */
+.shared-header {
+  text-align: center;
+  margin-bottom: 40px;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 20px;
+}
+
+.shared-header h1 {
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0;
+  color: var(--primary-color);
+}
+
+.shared-subtitle {
+  color: var(--light-text);
+  font-size: 14px;
+  margin-top: 8px;
+}
+
+/* Audio list container */
+.shared-audio-list {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+/* Individual audio item */
+.shared-audio-item {
+  background-color: var(--bg-color);
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: var(--card-shadow);
+  transition: var(--transition);
+  border: 1px solid var(--border-color);
+}
+
+.shared-audio-item:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+}
+
+/* Audio item header */
+.audio-item-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+  gap: 12px;
+}
+
+.audio-number {
+  background-color: var(--primary-color);
+  color: white;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.audio-query {
+  flex-grow: 1;
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.audio-date {
+  color: var(--light-text);
+  font-size: 13px;
+}
+
+/* Audio player container */
+.audio-player-container {
+  margin: 15px 0;
+  padding: 10px;
+  background-color: var(--hover-bg);
+  border-radius: 8px;
+}
+
+.audio-description {
+  margin: 10px 0 0;
+  color: var(--secondary-color);
+  font-size: 14px;
+}
+
+/* Loading state */
+.shared-loading-container {
+  text-align: center;
+  padding: 60px 20px;
+  background-color: var(--bg-color);
+}
+
+.loading-spinner {
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  border-top: 4px solid var(--primary-color);
+  width: 40px;
+  height: 40px;
+  margin: 0 auto 20px;
+  animation: spin 1s linear infinite;
+}
+
+.dark-mode .loading-spinner {
+  border: 4px solid rgba(255, 255, 255, 0.1);
+  border-top: 4px solid var(--primary-color);
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Error state */
+.shared-error-container {
+  max-width: 500px;
+  margin: 60px auto;
+  text-align: center;
+  padding: 30px;
+  background-color: var(--error-bg);
+  border-radius: 10px;
+  border: 1px solid var(--error-color);
+  color: var(--text-color);
+}
+
+.error-icon {
+  font-size: 40px;
+  margin-bottom: 15px;
+  color: var(--error-color);
+}
+
+.retry-button {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 20px;
+  transition: var(--transition);
+}
+
+.retry-button:hover {
+  background-color: #3a5ce5;
+}
+
+.dark-mode .retry-button:hover {
+  background-color: #6b88ff;
+}
+
+/* Empty state */
+.shared-empty-container {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--secondary-color);
+  background-color: var(--bg-color);
+}
+
+.empty-icon {
+  font-size: 40px;
+  margin-bottom: 15px;
+  color: var(--secondary-color);
+}
+
+/* Footer */
+.shared-footer {
+  margin-top: 40px;
+  text-align: center;
+  padding-top: 20px;
+  border-top: 1px solid var(--border-color);
+  color: var(--light-text);
+  font-size: 13px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .shared-chat-container {
+    padding: 20px 15px;
+  }
+  
+  .shared-header h1 {
+    font-size: 24px;
+  }
+  
+  .shared-audio-item {
+    padding: 15px;
+  }
+  
+  .audio-item-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+  
+  .audio-number {
+    margin-bottom: 5px;
+  }
+  
+  .audio-date {
+    align-self: flex-start;
+  }
+}
