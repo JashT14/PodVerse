@@ -77,6 +77,104 @@ By centralizing these features, PodVerse minimizes tool-hopping, accelerates ite
 
 ---
 
+## 📸 Screenshots
+
+<div style="animation: fadeIn 2s;">
+
+<div align="center">
+  <div style="display: flex; justify-content: center; flex-wrap: wrap; gap: 20px;">
+    <div style="width: 45%; min-width: 300px; margin-bottom: 20px;">
+      <img src="./Media/AudioBG1.png" alt="Audio Background Remover" width="100%" style="border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);" />
+      <p><strong>Audio Background Remover</strong><br/>Clean up noisy recordings with one click.</p>
+    </div>
+    <div style="width: 45%; min-width: 300px; margin-bottom: 20px;">
+      <img src="./Media/avatar1.png" alt="AI Avatar Option 1" width="100%" style="border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);" />
+      <p><strong>AI Avatar #1</strong><br/>Generate a talking avatar from a photo.</p>
+    </div>
+  </div>
+
+  <div style="display: flex; justify-content: center; flex-wrap: wrap; gap: 20px;">
+    <div style="width: 45%; min-width: 300px; margin-bottom: 20px;">
+      <img src="./Media/avatar2.png" alt="AI Avatar Option 2" width="100%" style="border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);" />
+      <p><strong>AI Avatar #2</strong><br/>Lip-sync your own voice or typed text.</p>
+    </div>
+    <div style="width: 45%; min-width: 300px; margin-bottom: 20px;">
+      <img src="./Media/contactUS.png" alt="Contact Us Section" width="100%" style="border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);" />
+      <p><strong>Contact Us</strong><br/>Get in touch for support or feedback.</p>
+    </div>
+  </div>
+
+  <div style="display: flex; justify-content: center; flex-wrap: wrap; gap: 20px;">
+    <div style="width: 45%; min-width: 300px; margin-bottom: 20px;">
+      <img src="./Media/dashboard1.png" alt="Dashboard View 1" width="100%" style="border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);" />
+      <p><strong>Dashboard #1</strong><br/>Overview of chats and generated episodes.</p>
+    </div>
+    <div style="width: 45%; min-width: 300px; margin-bottom: 20px;">
+      <img src="./Media/dashboard2.png" alt="Dashboard View 2" width="100%" style="border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);" />
+      <p><strong>Dashboard #2</strong><br/>Manage your saved history and settings.</p>
+    </div>
+  </div>
+
+  <div style="display: flex; justify-content: center; flex-wrap: wrap; gap: 20px;">
+    <div style="width: 45%; min-width: 300px; margin-bottom: 20px;">
+      <img src="./Media/dashboard3.png" alt="Dashboard View 3" width="100%" style="border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);" />
+      <p><strong>Dashboard #3</strong><br/>Quick access to voice-cloning studio.</p>
+    </div>
+    <div style="width: 45%; min-width: 300px; margin-bottom: 20px;">
+      <img src="./Media/features.png" alt="Features Overview" width="100%" style="border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);" />
+      <p><strong>Features</strong><br/>Four core modules in one platform.</p>
+    </div>
+  </div>
+
+  <div style="display: flex; justify-content: center; flex-wrap: wrap; gap: 20px;">
+    <div style="width: 45%; min-width: 300px; margin-bottom: 20px;">
+      <img src="./Media/getInTouch.png" alt="Get In Touch" width="100%" style="border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);" />
+      <p><strong>Get In Touch</strong><br/>Reach out for demos or enterprise plans.</p>
+    </div>
+    <div style="width: 45%; min-width: 300px; margin-bottom: 20px;">
+      <img src="./Media/MainPage.png" alt="Main Landing Page" width="100%" style="border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);" />
+      <p><strong>Main Page</strong><br/>Welcome screen with feature highlights.</p>
+    </div>
+  </div>
+
+  <div style="display: flex; justify-content: center; flex-wrap: wrap; gap: 20px;">
+    <div style="width: 45%; min-width: 300px; margin-bottom: 20px;">
+      <img src="./Media/signUp.png" alt="Sign Up Screen" width="100%" style="border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);" />
+      <p><strong>Sign Up</strong><br/>Create your PodVerse account to get started.</p>
+    </div>
+    <div style="width: 45%; min-width: 300px; margin-bottom: 20px;">
+      <img src="./Media/tts.png" alt="Text-to-Speech Interface" width="100%" style="border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);" />
+      <p><strong>Text-to-Podcast</strong><br/>Type or upload text, select voice & language.</p>
+    </div>
+  </div>
+
+  <div style="display: flex; justify-content: center; flex-wrap: wrap; gap: 20px;">
+    <div style="width: 45%; min-width: 300px; margin-bottom: 20px;">
+      <img src="./Media/VC_consent.png" alt="Voice Cloning Consent" width="100%" style="border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);" />
+      <p><strong>Voice Cloning Consent</strong><br/>User agreement before cloning a voice.</p>
+    </div>
+    <div style="width: 45%; min-width: 300px; margin-bottom: 20px;">
+      <img src="./Media/vc1.png" alt="Voice Cloning Studio 1" width="100%" style="border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);" />
+      <p><strong>Voice Cloning #1</strong><br/>Upload or record your sample voice.</p>
+    </div>
+  </div>
+
+  <div style="display: flex; justify-content: center; flex-wrap: wrap; gap: 20px;">
+    <div style="width: 45%; min-width: 300px; margin-bottom: 20px;">
+      <img src="./Media/vc2.png" alt="Voice Cloning Studio 2" width="100%" style="border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);" />
+      <p><strong>Voice Cloning #2</strong><br/>Select from celebrity presets or your own.</p>
+    </div>
+    <div style="width: 45%; min-width: 300px; margin-bottom: 20px;">
+      <img src="./Media/vc3.png" alt="Voice Cloning Studio 3" width="100%" style="border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);" />
+      <p><strong>Voice Cloning #3</strong><br/>Generate and download your cloned audio.</p>
+    </div>
+  </div>
+</div>
+
+</div>
+
+
+---
 ## 📂 Directory Structure
 ```
 📁 mypodcast
