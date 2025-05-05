@@ -79,8 +79,6 @@ By centralizing these features, PodVerse minimizes tool-hopping, accelerates ite
 
 ## 📂 Directory Structure
 ```
-📁 .venv
-│   └── 📄 requirements.txt
 📁 mypodcast
 │   ├── 📁 .git
 │   ├── 📁 api
